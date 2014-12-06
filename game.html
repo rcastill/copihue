@@ -6,7 +6,14 @@
     <link rel="stylesheet" href="src/game.css"/>
     <script src="vendor/jquery-2.1.1.min.js"></script>
     <script src="vendor/jquery-ui.min.js"></script>
-    <script src="src/game.js"></script>
+    <script src="src/hierarchy.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        $(document).disableSelection();
+        initHierarchy();
+    });
+    </script>
 </head>
 <body>
 <canvas></canvas>
@@ -17,14 +24,11 @@
         <img class="nav-command" id="command-go" src="img/go.png">
         <img class="nav-command" id="command-right" src="img/right.png">
         <img class="nav-command" id="command-left" src="img/left.png">
+        <img class="nav-command" id="command-paint" src="img/paint.png">
     </div>
     <h1>Hierarchy</h1>
-    <div id="trucks">
-
-    </div>
-    <div id="plus-button">
-        +
-    </div>
+    <div id="trucks"></div>
+    <div id="plus-button">+</div>
 </div>
 
 <div id="context">
