@@ -1,0 +1,95 @@
+body {
+    background-color: #F7F7F7;
+    font-family: Calibri;
+    margin: 0px;
+    padding: 0px;
+}
+
+canvas {
+    position: absolute;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    margin-right: 200px;
+    width: 1300px;
+}
+
+#hierarchy {
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    right: 0px;
+    background-color: #E7E7E7;
+    box-shadow: 0px 0px 5px #333;
+}
+
+#hierarchy h1 {
+    margin: 0;
+    font-weight: bold;
+    font-size: 16px;
+    background: url("../img/gradient-1.png");
+    padding: 5px;
+    border-bottom: 1px #CCC solid;
+}
+
+.nav-command {
+    background-image: url("../img/mask.png");
+    transition: 0.5s;
+    margin: 5px 0 5px 5px;
+}
+
+.no-transition {
+    transition: none;
+}
+
+.nav-command:hover {
+    background-image: url("../img/hover.png");
+}
+
+.nav-command.selected {
+    background-image: url("../img/selected.png");
+}
+
+#plus-button {
+    text-align: center;
+    background-color: #DDDDDD;
+    border-bottom: 1px #CCCCCC solid;
+    border-top: 1px #CCCCCC solid;
+    transition: 0.5s;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+#plus-button:hover {
+    background-color: #F7F7F7;
+}
+
+.truck {
+    min-height: 30px;
+}
+
+.truck:nth-child(2n) {
+    background-color: #F7F7F7;
+}
+
+.truck-color {
+    display: inline-block;
+    width: 30px;
+    min-height: 30px;
+    border-right: 4px #CCC solid;
+    cursor: pointer;
+}
+
+.truck-commands {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    width: 260px;
+    min-height: 30px;
+}
+
+.truck-commands img {
+    width: 30px;
+    height: 30px;
+    margin-top: -2px;
+}
