@@ -1,7 +1,6 @@
 var colors = [
-    '#779ECB', '#77DD77', '#C23B22', '#836953', '#AEC6CF'
+    '#779ECB', '#77DD77', '#C23B22', '#836953', '#FFB347'
 ];
-
 
 /*
  * Used when a command in the nav is being dragged.
@@ -38,8 +37,23 @@ var contextMenuActions = {
     },
 
     'delete': function(index) {
-        $('.truck:eq(' + index + ')').parent().slideUp(function() {
+        var element = $('.truck:eq(' + index + ')');
+        var color = element.children('.truck-color').attr('data-color');
+
+        $('.command').each(function() {
+            if($(this).attr('data-id').split('-')[1] == color)
+                $(this).animate({
+                    width: '0px',
+                    height: '0px',
+                    margin: '+=11px'
+                }, function () {
+                    $(this).remove();
+                });
+        });
+
+        element.parent().slideUp(function() {
             $(this).remove();
+
         });
     }
 };
@@ -60,6 +74,7 @@ var truckCommandsDrop = {
             var img = $('<img>');
             img.attr('src', ui.draggable.attr('src'));
             img.attr('data-id', ui.draggable.attr('id'));
+            img.addClass('command');
             $(this).append(img);
 
             // delete this command when user clicks the secondary button.
@@ -75,7 +90,7 @@ var truckCommandsDrop = {
             var img = $('<img>');
             img.attr('src', 'img/blank-command.png');
             img.attr('data-id', 'truck-' + ui.draggable.attr('data-color'));
-
+            img.addClass('command');
             img.css('width', '26px');
             img.css('height', '26px');
             img.css('background-color', ui.draggable.attr('data-color'));
@@ -163,12 +178,28 @@ function truckCommandsClick(target) {
             img.attr('data-id', $(this).attr('id'));
 
             target.append(img);
+
+            // delete this command when user clicks the secondary button.
+            img.bind('contextmenu', function() {
+                $(this).remove();
+                return false;
+            });
         }
     });
 }
 
 function truckColorClick() {
+    var prevColor = $(this).attr('data-color');
     var color = getUnusedColor();
+    if(color == false) return;
+
+    $('.command').each(function() {
+        if($(this).attr('data-id').split('-')[1] == prevColor) {
+            $(this).attr('data-id', 'truck-' + color);
+            $(this).css('background-color', color);
+        }
+    });
+
     $(this).css('background-color', color);
     $(this).attr('data-color', color);
 }
@@ -215,7 +246,7 @@ function showContextMenu(event) {
     else
         $('#context-delete').css('display', 'block');
 
-    $('#context').attr('data-index', index).css('top', pos).slideDown();
+    $('#context').attr('data-index', index).css('top', pos).slideDown(200);
     return false;
 }
 
@@ -257,6 +288,16 @@ function initHierarchy() {
         var color = getUnusedColor();
         if(color != false)
             addTruck(color, false);
+    });
+
+    $('#play-button').click(function() {
+        if(stop)
+            start(getTrucksAndCommands());
+        else
+            finish();
+
+        $(this).removeClass('stop');
+        if(!stop) $(this).addClass('stop');
     });
 }
 

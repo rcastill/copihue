@@ -1,5 +1,5 @@
 body {
-    background-color: #F7F7F7;
+    background-color: #000;
     font-family: Calibri;
     margin: 0;
     padding: 0;
@@ -11,12 +11,14 @@ a {
     text-decoration: none;
 }
 
-canvas {
-    position: absolute;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    margin-right: 200px;
+@-webkit-keyframes ease-entry-canvas {
+    from { left: -2000px; }
+    to { left: 0; }
+}
+
+@keyframes ease-entry-canvas {
+    from { left: -2000px; }
+    to { left: 0; }
 }
 
 @-webkit-keyframes ease-entry {
@@ -27,6 +29,19 @@ canvas {
 @keyframes ease-entry {
     from { right: -300px; }
     to { right: 0; }
+}
+
+canvas {
+    position: absolute;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    margin-right: 200px;
+
+    -webkit-animation: ease-entry-canvas 0.5s;
+    -moz-animation: ease-entry-canvas 0.5s;
+    -o-animation: ease-entry-canvas 0.5s;
+    animation: ease-entry-canvas 0.5s;
 }
 
 #hierarchy {
@@ -40,7 +55,7 @@ canvas {
     height: 100%;
     right: 0;
     background-color: #E7E7E7;
-    box-shadow: 0 0 5px #333;
+    box-shadow: 0 0 10px 2px #000;
 }
 
 #hierarchy h1 {
@@ -82,6 +97,24 @@ canvas {
 
 #plus-button:hover {
     background-color: #F7F7F7;
+}
+
+#action-bar {
+}
+
+#play-button {
+    position: absolute;
+    background-image: url("../img/play-button.png");
+    width: 100px;
+    height: 100px;
+    right: 0;
+    bottom: 0;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+#play-button.stop {
+    background-image: url("../img/stop-button.png");
 }
 
 .truck {
