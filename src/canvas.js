@@ -42,9 +42,6 @@ function initGame(_initial) {
     loadImages();
     createMatrix();
 
-    matrix[7][6].setUpperColor('blue');
-    matrix[7][2].setUpperColor('red');
-
     matrix[5][4].texture = images['road-horizontal'];
     matrix[6][4].texture = images['road-horizontal'];
     matrix[7][4].texture = images['road-horizontal'];
@@ -55,6 +52,9 @@ function initGame(_initial) {
     matrix[4][4].texture = images['road-righty'];
     matrix[4][3].texture = images['road-vertical'];
     matrix[4][5].texture = images['road-vertical'];
+    matrix[4][6].texture = images['road-vertical'];
+    matrix[4][7].texture = images['road-corner-downleft'];
+    matrix[3][7].texture = images['road-horizontal'];
     matrix[9][2].texture = images['road-corner-upleft'];
     matrix[9][6].texture = images['road-corner-downleft'];
     matrix[8][2].texture = images['road-horizontal'];
@@ -63,7 +63,30 @@ function initGame(_initial) {
     matrix[7][6].texture = images['road-stop-left'];
 
     matrix[4][2].texture = images['road-stop-up'];
-    matrix[4][6].texture = images['road-stop-down'];
+    matrix[2][7].texture = images['road-stop-left'];
+
+    matrix[1][3].texture = images['tree-top'];
+    matrix[1][4].texture = images['tree-vertical-middle'];
+    matrix[1][5].texture = images['tree-bottom'];
+
+    matrix[12][3].texture = images['tree-top'];
+    matrix[12][4].texture = images['tree-vertical-middle'];
+    matrix[12][5].texture = images['tree-bottom'];
+
+    matrix[8][3].texture = images['tree-solo-1'];
+    matrix[8][5].texture = images['tree-solo-2'];
+    matrix[3][6].texture = images['tree-solo-1'];
+
+    matrix[3][1].texture = images['tree-left'];
+    matrix[4][1].texture = images['tree-horizontal-middle'];
+    matrix[5][1].texture = images['tree-right'];
+
+    matrix[5][5].texture = images['lake-top'];
+    matrix[5][6].texture = images['lake-bottom'];
+
+    matrix[7][6].setUpperColor('blue');
+    matrix[7][2].setUpperColor('red');
+    matrix[2][7].setUpperColor('brown');
 
     $('#container').append(canvas);
 
@@ -74,11 +97,19 @@ function initGame(_initial) {
 function loadImages() {
     var imagesUrls = [
         'corner-1', 'corner-2', 'corner-3', 'corner-4', 'tile',
+
         'truck-blue', 'truck-red', 'truck-green', 'truck-brown', 'truck-orange',
-        'spot-blue', 'spot-red',
+
+        'tree-top', 'tree-vertical-middle', 'tree-bottom', 'tree-solo-1', 'tree-solo-2', 'tree-right', 'tree-left',
+        'tree-horizontal-middle',
+
+        'pit', 'lake-top', 'lake-bottom',
+
+        'spot-blue', 'spot-red', 'spot-orange', 'spot-brown', 'spot-green',
+
         'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
         'road-corner-downleft', 'road-corner-downright', 'road-corner-upright', 'road-corner-upleft', 'road-stop-up',
-        'road-stop-down', 'road-stop-right', 'road-stop-left'
+        'road-stop-down', 'road-stop-right', 'road-stop-left',
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -107,7 +138,7 @@ function createMatrix() {
 
 function clearScreen() {
     context.clearRect(0, 0, width, height);
-    context.fillStyle = '#836953';
+    context.fillStyle = '#604B3E';
     context.fillRect(0, 0, width, height);
 }
 

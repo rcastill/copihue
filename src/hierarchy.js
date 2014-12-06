@@ -178,6 +178,12 @@ function truckCommandsClick(target) {
             img.attr('data-id', $(this).attr('id'));
 
             target.append(img);
+
+            // delete this command when user clicks the secondary button.
+            img.bind('contextmenu', function() {
+                $(this).remove();
+                return false;
+            });
         }
     });
 }
