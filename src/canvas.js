@@ -19,7 +19,9 @@ var width;
 var colorNamesTable = {
     '#779ECB': 'blue',
     '#C23B22': 'red',
-    '#77DD77': 'green'
+    '#77DD77': 'green',
+    '#836953': 'brown',
+    '#FFB347': 'orange'
 };
 
 function initGame(_initial) {
@@ -72,7 +74,7 @@ function initGame(_initial) {
 function loadImages() {
     var imagesUrls = [
         'corner-1', 'corner-2', 'corner-3', 'corner-4', 'tile',
-        'truck-blue', 'truck-red', 'truck-green',
+        'truck-blue', 'truck-red', 'truck-green', 'truck-brown', 'truck-orange',
         'spot-blue', 'spot-red',
         'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
         'road-corner-downleft', 'road-corner-downright', 'road-corner-upright', 'road-corner-upleft', 'road-stop-up',

@@ -1,7 +1,6 @@
 var colors = [
-    '#779ECB', '#77DD77', '#C23B22', '#836953', '#AEC6CF'
+    '#779ECB', '#77DD77', '#C23B22', '#836953', '#FFB347'
 ];
-
 
 /*
  * Used when a command in the nav is being dragged.
@@ -38,8 +37,23 @@ var contextMenuActions = {
     },
 
     'delete': function(index) {
-        $('.truck:eq(' + index + ')').parent().slideUp(function() {
+        var element = $('.truck:eq(' + index + ')');
+        var color = element.children('.truck-color').attr('data-color');
+
+        $('.command').each(function() {
+            if($(this).attr('data-id').split('-')[1] == color)
+                $(this).animate({
+                    width: '0px',
+                    height: '0px',
+                    margin: '+=11px'
+                }, function () {
+                    $(this).remove();
+                });
+        });
+
+        element.parent().slideUp(function() {
             $(this).remove();
+
         });
     }
 };
@@ -226,7 +240,7 @@ function showContextMenu(event) {
     else
         $('#context-delete').css('display', 'block');
 
-    $('#context').attr('data-index', index).css('top', pos).slideDown();
+    $('#context').attr('data-index', index).css('top', pos).slideDown(200);
     return false;
 }
 

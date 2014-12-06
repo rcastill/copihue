@@ -55,7 +55,7 @@ canvas {
     height: 100%;
     right: 0;
     background-color: #E7E7E7;
-    box-shadow: 0 0 5px #333;
+    box-shadow: 0 0 10px 2px #000;
 }
 
 #hierarchy h1 {
