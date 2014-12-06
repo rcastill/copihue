@@ -18,7 +18,6 @@ $(document).ready(function () {
     var badge = $("#badge");
     var user = $("#user-input");
 
-    //badge.hide();
     user.parent().hide();
     user.required = false
     $("#email-input").focus();

@@ -64,3 +64,53 @@ function detectRoadPieces(matrix) {
 
     return result;
 }
+
+function setColor(editor, color) {
+    // Default value is black (#000000)
+    editor.context.strokeStyle = (color == undefined) ? 0 : color;
+}
+
+/*
+Grid (dim x dim)
+ */
+function grid(editor, dim, color) {
+    var w = editor.canvas.width;
+    var h = editor.canvas.height;
+
+    setColor(editor, color);
+    console.log(color);
+
+
+    for (x = 0; x < w; x += dim) {
+        editor.context.beginPath();
+        editor.context.moveTo(x, 0);
+        editor.context.lineTo(x, h);
+        editor.context.stroke();
+    }
+
+    for (y = 0; y < w; y += dim) {
+        editor.context.beginPath();
+        editor.context.moveTo(0, y);
+        editor.context.lineTo(w, y);
+        editor.context.stroke();
+    }
+
+    // Reset color
+    setColor(editor);
+}
+
+function init() {
+    var canvas = document.getElementById("editor");
+    var context = canvas.getContext("2d");
+
+    var editor = {
+        canvas: canvas,
+        context: context
+    };
+
+    grid(editor, 75, "#ff0000");
+}
+
+$(document).ready(function () {
+    init();
+});
