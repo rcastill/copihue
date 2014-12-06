@@ -7,16 +7,18 @@
     <script src="vendor/jquery-2.1.1.min.js"></script>
     <script src="vendor/jquery-ui.min.js"></script>
     <script src="src/hierarchy.js"></script>
+    <script src="src/canvas.js"></script>
 
     <script>
     $(document).ready(function() {
         $(document).disableSelection();
+        initGame([5, 4, '#779ECB']);
         initHierarchy();
     });
     </script>
 </head>
 <body>
-<canvas></canvas>
+<div id="container"></div>
 
 <div id="hierarchy">
     <h1>Commands</h1>
@@ -29,6 +31,9 @@
     <h1>Hierarchy</h1>
     <div id="trucks"></div>
     <div id="plus-button">+</div>
+    <div id="action-bar">
+        <div id="play-button"></div>
+    </div>
 </div>
 
 <div id="context">

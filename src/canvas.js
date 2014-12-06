@@ -1,24 +1,30 @@
 var TILE_SIZE = 75;
 
-var canvas;
-var context;
-var width;
-var height;
-var images = {};
-var matrix;
 var levelHeight = 9;
 var levelWidth = 14;
-var viewOffsetTop;
+var stop = true;
+var images = {};
+
 var viewOffsetLeft;
+var viewOffsetTop;
 var hierarchy;
+var context;
+var initial;
+var canvas;
+var height;
+var matrix;
 var trucks;
+var width;
 
 var colorNamesTable = {
     '#779ECB': 'blue',
     '#C23B22': 'red',
+    '#77DD77': 'green'
 };
 
-function initCanvas() {
+function initGame(_initial) {
+    initial = _initial;
+
     canvas = document.createElement('canvas');
     context = canvas.getContext('2d');
 
@@ -57,13 +63,16 @@ function initCanvas() {
     matrix[4][2].texture = images['road-stop-up'];
     matrix[4][6].texture = images['road-stop-down'];
 
-    $('body').append(canvas);
+    $('#container').append(canvas);
+
+    finish();
+    mainLoop();
 }
 
 function loadImages() {
     var imagesUrls = [
         'corner-1', 'corner-2', 'corner-3', 'corner-4', 'tile',
-        'truck-blue', 'truck-red',
+        'truck-blue', 'truck-red', 'truck-green',
         'spot-blue', 'spot-red',
         'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
         'road-corner-downleft', 'road-corner-downright', 'road-corner-upright', 'road-corner-upleft', 'road-stop-up',
@@ -96,7 +105,7 @@ function createMatrix() {
 
 function clearScreen() {
     context.clearRect(0, 0, width, height);
-    context.fillStyle = 'rgb(255, 255, 255)';
+    context.fillStyle = '#836953';
     context.fillRect(0, 0, width, height);
 }
 
@@ -115,7 +124,6 @@ function render() {
                     viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
-
 
     for(var i = 0; i < trucks.length; i++) {
         var truck = trucks[i];
@@ -142,9 +150,7 @@ function render() {
         );
 
         context.restore();
-
     }
-
 }
 
 function update() {
@@ -167,18 +173,35 @@ function events() {
 function mainLoop() {
     requestAnimationFrame(mainLoop);
     events();
-    update();
+
+    if(!stop) update();
+
     render();
 }
 
-function start(_hierarchy, _initial) {
+function finish() {
+    hierarchy = undefined;
+    trucks = [];
+    for(var i = 0; i < initial.length; i += 3)
+        trucks.push(new Truck(initial[i], initial[i + 1], {
+            color: initial[i + 2],
+            commands: []
+        }));
+
+    stop = true;
+}
+
+function start(_hierarchy) {
     hierarchy = _hierarchy;
 
-    trucks = [];
-    for(var i = 0; i < _initial.length; i += 3) {
-        trucks.push(new Truck(_initial[0], _initial[1], hierarchy[_initial[2]]));
+    for(var i = 0; i < trucks.length; i++) {
+        for(var j = 0; j < hierarchy.length; j++) {
+            if(hierarchy[j].color == trucks[i].color)
+                trucks[i].commands = hierarchy[j].commands;
+        }
     }
-    mainLoop();
+
+    stop = false;
 }
 
 /*

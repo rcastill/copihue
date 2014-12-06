@@ -60,6 +60,7 @@ var truckCommandsDrop = {
             var img = $('<img>');
             img.attr('src', ui.draggable.attr('src'));
             img.attr('data-id', ui.draggable.attr('id'));
+            img.addClass('command');
             $(this).append(img);
 
             // delete this command when user clicks the secondary button.
@@ -75,7 +76,7 @@ var truckCommandsDrop = {
             var img = $('<img>');
             img.attr('src', 'img/blank-command.png');
             img.attr('data-id', 'truck-' + ui.draggable.attr('data-color'));
-
+            img.addClass('command');
             img.css('width', '26px');
             img.css('height', '26px');
             img.css('background-color', ui.draggable.attr('data-color'));
@@ -168,7 +169,17 @@ function truckCommandsClick(target) {
 }
 
 function truckColorClick() {
+    var prevColor = $(this).attr('data-color');
     var color = getUnusedColor();
+    if(color == false) return;
+
+    $('.command').each(function() {
+        if($(this).attr('data-id').split('-')[1] == prevColor) {
+            $(this).attr('data-id', 'truck-' + color);
+            $(this).css('background-color', color);
+        }
+    });
+
     $(this).css('background-color', color);
     $(this).attr('data-color', color);
 }
@@ -257,6 +268,16 @@ function initHierarchy() {
         var color = getUnusedColor();
         if(color != false)
             addTruck(color, false);
+    });
+
+    $('#play-button').click(function() {
+        if(stop)
+            start(getTrucksAndCommands());
+        else
+            finish();
+
+        $(this).removeClass('stop');
+        if(!stop) $(this).addClass('stop');
     });
 }
 
