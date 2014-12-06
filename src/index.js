@@ -13,8 +13,15 @@ function toggleLoginRegister() {
 }
 
 $(document).ready(function () {
+    $("#box").delay(1000).fadeIn().show(1500);
+
+    var badge = $("#badge");
     var user = $("#user-input");
+
+    //badge.hide();
     user.parent().hide();
     user.required = false
     $("#email-input").focus();
+
+    badge.delay(1500).slideDown().show(350);
 });
