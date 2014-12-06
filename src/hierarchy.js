@@ -79,7 +79,8 @@ var truckCommandsDrop = {
             img.css('width', '26px');
             img.css('height', '26px');
             img.css('background-color', ui.draggable.attr('data-color'));
-            img.css('margin', '2px');
+            img.css('border-radius', '50px');
+            img.css('margin', '3px 2px 1px 2px');
             $(this).append(img);
 
             // delete this command when user clicks the secondary button.
