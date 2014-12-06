@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>test</title>
+    <script src="vendor/jquery-2.1.1.min.js"></script>
+    <script src="src/fb.js"></script>
+    <script src="src/db.js"></script>
+</head>
+<body>
+
+<!--suppress HtmlFormInputWithoutLabel -->
+<input type="text" id="user-input" placeholder="username">
+<input type="password" id="pwd-input" placeholder="password">
+<button id="test-btn">register</button>
+
+<br>
+
+<fb:login-button scope="public_profile,email" onlogin="registerViaFacebook();">
+</fb:login-button>
+<p id="user-data"></p>
+<button onclick="disconnect()">logout</button>
+
+</body>
+</html>
