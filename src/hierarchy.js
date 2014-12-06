@@ -52,7 +52,11 @@ var truckCommandsDrop = {
         if($(this).parent().attr('data-locked') == 'true')
             return;
 
+        // check if it is a command.
         if(ui.draggable.hasClass('nav-command')) {
+            /*
+             * If this is a command, we add its properties to a image and the that image to our commands.
+             */
             var img = $('<img>');
             img.attr('src', ui.draggable.attr('src'));
             img.attr('data-id', ui.draggable.attr('id'));
@@ -63,7 +67,42 @@ var truckCommandsDrop = {
                 $(this).remove();
                 return false;
             });
+
+        } else if(ui.draggable.hasClass('truck-color')) {
+            /*
+             * If this is a truck's color we add its properties to a image and then and this image to our commands.
+             */
+            var img = $('<img>');
+            img.attr('src', 'img/blank-command.png');
+            img.attr('data-id', 'truck-' + ui.draggable.attr('data-color'));
+
+            img.css('width', '26px');
+            img.css('height', '26px');
+            img.css('background-color', ui.draggable.attr('data-color'));
+            img.css('margin', '2px');
+            $(this).append(img);
+
+            // delete this command when user clicks the secondary button.
+            img.bind('contextmenu', function() {
+                $(this).remove();
+                return false;
+            });
         }
+    }
+};
+
+/*
+ * Used when something has been dropped inside a command section.
+ */
+var truckColorDrag = {
+    start: function(event, ui) {
+        ui.helper.addClass('no-transition');
+    },
+
+    stop: function(event, ui) {
+        ui.helper.css('left', 0);
+        ui.helper.css('top', 0);
+        ui.helper.removeClass('no-transition');
     }
 };
 
@@ -80,24 +119,25 @@ function addTruck(color, byDefault) {
     // modify truck's color
     truckColor.css('background-color', color);
     truckColor.attr('data-color', color);
-    if(byDefault)
-        truck.attr('data-default', 'true');
-    else
-        truckColor.click(truckColorClick);
 
     // append children to the truck.
     truck.append(truckColor);
     truck.append(truckCommands);
 
-    // add events.
+    // add events to truck's commands.
     truckCommands.droppable(truckCommandsDrop);
     truckCommands.sortable();
     truckCommands.click(function() {
         truckCommandsClick($(this));
     });
 
+    // add events to truck's color.
     truckColor.on('contextmenu', showContextMenu);
-    truckColor.draggable();
+    truckColor.draggable(truckColorDrag);
+
+    // add color change event only if is not a default truck.
+    if(byDefault)   truck.attr('data-default', 'true');
+    else            truckColor.click(truckColorClick);
 
     // add to container and hide.
     container.append(truck);

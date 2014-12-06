@@ -19,20 +19,14 @@ canvas {
     margin-right: 200px;
 }
 
-/* Chrome, Safari, Opera */
 @-webkit-keyframes ease-entry {
-    from {
-        right: -300px;
-    }
-    to {
-        right: 0;
-    }
+    from { right: -300px; }
+    to { right: 0; }
 }
 
-/* Standard syntax */
 @keyframes ease-entry {
-    from {background: red;}
-    to {background: yellow;}
+    from { right: -300px; }
+    to { right: 0; }
 }
 
 #hierarchy {
