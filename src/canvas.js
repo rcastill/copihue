@@ -7,6 +7,7 @@ var images = {};
 
 var viewOffsetLeft;
 var viewOffsetTop;
+var totalMarks;
 var hierarchy;
 var context;
 var initial;
@@ -22,6 +23,14 @@ var colorNamesTable = {
     '#77DD77': 'green',
     '#836953': 'brown',
     '#FFB347': 'orange'
+};
+
+var colorCodesTable = {
+    'blue': '#779ECB',
+    'red': '#C23B22',
+    'green': '#77DD77',
+    'brown': '#836953',
+    'orange': '#FFB347'
 };
 
 function initGame(_initial) {
@@ -88,6 +97,22 @@ function initGame(_initial) {
     matrix[7][2].setUpperColor('red');
     matrix[2][7].setUpperColor('brown');
 
+    totalMarks = 0;
+    for(var x = 0; x < levelWidth; x++) {
+        for(var y = 0; y < levelHeight; y++) {
+            var sections = matrix[x][y].texture.src.split('/');
+            var filename = sections[sections.length - 1];
+            var firstSection = filename.split('-')[0];
+
+            if(firstSection == 'road') {
+                matrix[x][y].street = true;
+            }
+
+            if(matrix[x][y].hasUpperColor())
+                totalMarks++;
+        }
+    }
+
     $('#container').append(canvas);
 
     finish();
@@ -106,6 +131,7 @@ function loadImages() {
         'pit', 'lake-top', 'lake-bottom',
 
         'spot-blue', 'spot-red', 'spot-orange', 'spot-brown', 'spot-green',
+        'spot-blue-marked', 'spot-red-marked', 'spot-green-marked', 'spot-brown-marked', 'spot-orange-marked',
 
         'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
         'road-corner-downleft', 'road-corner-downright', 'road-corner-upright', 'road-corner-upleft', 'road-stop-up',
@@ -152,9 +178,14 @@ function render() {
             context.drawImage(tile.texture, viewOffsetLeft + x * TILE_SIZE,
                 viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
-            if(tile.hasUpperColor()) {
-                context.drawImage(images['spot-' + tile.upperColor], viewOffsetLeft + x * TILE_SIZE,
+            if(tile.marked !== false) {
+                context.drawImage(images['spot-' + tile.marked + '-marked'], viewOffsetLeft + x * TILE_SIZE,
                     viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            } else {
+                if(tile.hasUpperColor()) {
+                    context.drawImage(images['spot-' + tile.upperColor], viewOffsetLeft + x * TILE_SIZE,
+                        viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                }
             }
         }
 
@@ -187,39 +218,54 @@ function render() {
 }
 
 function update() {
+    var newTrucks = [];
+
     for(var i = 0; i < trucks.length; i++) {
         var truck = trucks[i];
         truck.update();
 
         if(truck.isSpawning() !== false) {
             var index = truck.isSpawning();
-            trucks.push(new Truck(truck._x, truck._y, hierarchy[index]));
+            newTrucks.push(new Truck(truck._x, truck._y, hierarchy[index]));
             truck.finish();
         }
     }
-}
 
-function events() {
+    for(var j = 0; j < newTrucks.length; j++)
+        trucks.push(newTrucks[j]);
 
+    var markCount = 0;
+    for(var x = 0; x < levelWidth; x++) {
+        for(var y = 0; y < levelHeight; y++) {
+            var tile = matrix[x][y];
+            if(tile.marked !== false && tile.hasUpperColor() && tile.marked == tile.upperColor)
+                markCount++;
+        }
+    }
+
+    if(totalMarks == markCount)
+        win();
 }
 
 function mainLoop() {
     requestAnimationFrame(mainLoop);
-    events();
-
     if(!stop) update();
-
     render();
 }
 
 function finish() {
     hierarchy = undefined;
     trucks = [];
+
     for(var i = 0; i < initial.length; i += 3)
         trucks.push(new Truck(initial[i], initial[i + 1], {
             color: initial[i + 2],
             commands: []
         }));
+
+    for(var x = 0; x < levelWidth; x++)
+        for(var y = 0; y < levelHeight; y++)
+            matrix[x][y].unMark();
 
     stop = true;
 }
@@ -227,14 +273,21 @@ function finish() {
 function start(_hierarchy) {
     hierarchy = _hierarchy;
 
-    for(var i = 0; i < trucks.length; i++) {
-        for(var j = 0; j < hierarchy.length; j++) {
+    for(var i = 0; i < trucks.length; i++)
+        for(var j = 0; j < hierarchy.length; j++)
             if(hierarchy[j].color == trucks[i].color)
                 trucks[i].commands = hierarchy[j].commands;
-        }
-    }
 
     stop = false;
+}
+
+function lose() {
+
+}
+
+function win() {
+    alert("You won!");
+    $('#play-button').trigger('click');
 }
 
 /*
@@ -242,6 +295,7 @@ function start(_hierarchy) {
  */
 function Tile(texture) {
     this.texture = texture;
+    this.marked  = false;
 }
 
 Tile.prototype.setUpperColor = function(color) {
@@ -251,7 +305,21 @@ Tile.prototype.setUpperColor = function(color) {
 Tile.prototype.hasUpperColor = function() {
     if(this.upperColor != undefined)
         return true;
-}
+};
+
+Tile.prototype.isStreet = function() {
+    if(this.street != undefined)
+        return this.street;
+    return false;
+};
+
+Tile.prototype.mark = function(color) {
+    this.marked = color;
+};
+
+Tile.prototype.unMark = function() {
+    this.marked = false;
+};
 
 /*
  * Truck Object.
@@ -274,26 +342,34 @@ Truck.prototype.update = function() {
         this.decide();
 
     if(this.performing == "go") {
+        var dx = this._x - this.x;
+        var dy = this._y - this.y;
+
+        var vx = 0;
+        if (dx != 0) vx = dx / Math.abs(dx);
+
+        var vy = 0;
+        if (dy != 0) vy = dy / Math.abs(dy);
+
+        this.x += vx * 0.05;
+        this.y += vy * 0.05;
+
         if (parseInt(this.x * 10) == this._x * 10 && parseInt(this.y * 10) == this._y * 10) {
             this.x = this._x;
             this.y = this._y;
             this.finish();
-
-        } else {
-            var dx = this._x - this.x;
-            var dy = this._y - this.y;
-
-            var vx = 0;
-            if (dx != 0) vx = dx / Math.abs(dx);
-
-            var vy = 0;
-            if (dy != 0) vy = dy / Math.abs(dy);
-
-            this.x += vx * 0.05;
-            this.y += vy * 0.05;
         }
 
-    } else if(this.performing == 'left' || this.performing == 'right') {
+    } else if(this.performing == 'left') {
+        this.dir = (this.dir + 1) % 4;
+        this.finish();
+
+    } else if(this.performing == 'right') {
+        this.dir = (this.dir - 1 + 4) % 4;
+        this.finish();
+
+    } else if(this.performing == 'mark') {
+        matrix[this._x][this._y].mark(colorNamesTable[this.color]);
         this.finish();
     }
 };
@@ -306,6 +382,8 @@ Truck.prototype.decide = function() {
 
     if(command.split('-')[0] == 'command') {
         this.performing = command.split('-')[1];
+        var previousX = this._x;
+        var previousY = this._y;
 
         if(this.performing == "go") {
             switch(this.dir) {
@@ -325,10 +403,25 @@ Truck.prototype.decide = function() {
                     this._y += 1;
                     break;
             }
-        } else if(this.performing == 'left') {
-            this.dir = (this.dir + 1) % 4;
-        } else if(this.performing == 'right') {
-            this.dir = (this.dir - 1 + 4) % 4;
+
+            if(this._x < 0 || this._x > levelWidth - 1) {
+                this._x = previousX;
+                this.finish();
+                lose();
+            }
+
+            if(this._y < 0 || this._y > levelHeight - 1) {
+                this._y = previousY;
+                this.finish();
+                lose();
+            }
+
+            if(!matrix[this._x][this._y].isStreet()) {
+                this._x = previousX;
+                this._y = previousY;
+                this.finish();
+                lose();
+            }
         }
 
     } else {

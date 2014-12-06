@@ -161,6 +161,8 @@ function addTruck(color, byDefault) {
 
     $('#trucks').append(container);
     container.slideDown();
+
+    return truck;
 }
 
 /*
@@ -290,6 +292,10 @@ function initHierarchy() {
             addTruck(color, false);
     });
 
+    $('#save-button').click(function() {
+        localStorage.setItem('copihue-saveSpace', JSON.stringify(getTrucksAndCommands()));
+    });
+
     $('#play-button').click(function() {
         if(stop)
             start(getTrucksAndCommands());
@@ -320,4 +326,71 @@ function getTrucksAndCommands() {
     });
 
     return data;
+}
+
+
+/*
+ * Takes in a given hierarchy.
+ */
+function take(_hierarchy) {
+    for(var i = 0; i < _hierarchy.length; i++) {
+        // find the truck definition if it exists.
+        var found = false;
+        $('.truck').each(function() {
+            if($(this).children('.truck-color').attr('data-color') == _hierarchy[i].color) {
+                truckCommands = $(this).children('.truck-commands');
+                truckCommands.empty();
+                found = true;
+            }
+        });
+
+        // if the truck is not defined, we add it to the hierarchy.
+        if(!found) {
+            var truck = addTruck(_hierarchy[i].color, false);
+            var truckCommands = truck.children('.truck-commands');
+        }
+
+        for(var j = 0; j < _hierarchy[i].commands.length; j++) {
+            var prefix = _hierarchy[i].commands[j].split('-')[0];
+            var command = _hierarchy[i].commands[j].split('-')[1];
+
+            if(prefix == 'command') {
+                /*
+                 * If this is a command, we add its properties to a image and the that image to our commands.
+                 */
+                var img = $('<img>');
+                img.attr('src', 'img/' + command + ".png");
+                img.attr('data-id', _hierarchy[i].commands[j]);
+                img.addClass('command');
+                truckCommands.append(img);
+
+                // delete this command when user clicks the secondary button.
+                img.bind('contextmenu', function() {
+                    $(this).remove();
+                    return false;
+                });
+
+            } else if(prefix == 'truck') {
+                /*
+                 * If this is a truck's color we add its properties to a image and then and this image to our commands.
+                 */
+                var img = $('<img>');
+                img.attr('src', 'img/blank-command.png');
+                img.attr('data-id', _hierarchy[i].commands[j]);
+                img.addClass('command');
+                img.css('width', '26px');
+                img.css('height', '26px');
+                img.css('background-color', command);
+                img.css('border-radius', '50px');
+                img.css('margin', '3px 2px 1px 2px');
+                truckCommands.append(img);
+
+                // delete this command when user clicks the secondary button.
+                img.bind('contextmenu', function() {
+                    $(this).remove();
+                    return false;
+                });
+            }
+        }
+    }
 }
