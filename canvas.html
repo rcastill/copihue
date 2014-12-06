@@ -22,7 +22,35 @@
     <script>
     $(document).ready(function() {
         initCanvas();
-        start();
+        start([
+            {
+                "color": "#779ECB",
+                "commands": [
+                    "command-go",
+                    "command-go",
+                    "command-go",
+                    "command-go",
+                    "truck-#C23B22",
+                    "command-right",
+                    "command-go",
+                    "command-go",
+                    "command-right",
+                    "command-go",
+                    "command-go",
+                ]
+            },
+            {
+                "color": "#C23B22",
+                "commands": [
+                    "command-left",
+                    "command-go",
+                    "command-go",
+                    "command-left",
+                    "command-go",
+                    "command-go",
+                ]
+            }
+        ], [5, 4, 0]);
     });
     </script>
 </head>
