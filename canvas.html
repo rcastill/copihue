@@ -4,13 +4,27 @@
     <meta charset="UTF-8">
     <title></title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #F7F7F7;
+    }
+
+    canvas {
+        position: absolute;
+    }
     </style>
 
-    <script src=""></script>
+    <script src="vendor/jquery-2.1.1.min.js"></script>
+    <script src="src/canvas.js"></script>
+    <script>
+    $(document).ready(function() {
+        initCanvas();
+        start();
+    });
+    </script>
 </head>
 <body>
 
