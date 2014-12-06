@@ -6,10 +6,46 @@ var width;
 var height;
 var images = {};
 var matrix;
-var levelHeight = 8;
+var levelHeight = 9;
 var levelWidth = 14;
 var viewOffsetTop;
 var viewOffsetLeft;
+
+var hierarchy =[
+    {
+        "color": "#779ECB",
+        "commands": [
+                "command-go",
+                "command-go",
+                "command-right",
+                "command-go",
+                "command-go",
+                "command-left",
+                "command-go",
+                "command-go",
+                "truck-#C23B22"
+            ]
+    },
+    {
+        "color": "#C23B22",
+        "commands": [
+            "command-go",
+            "command-go",
+            "command-left",
+            "command-go",
+            "command-go",
+            "command-left",
+            "command-go",
+            "command-go"
+        ]
+    }
+];
+
+var colorNamesTable = {
+    '#779ECB': 'blue',
+}
+
+var trucks = [new Truck(5, 4, '#779ECB', hierarchy[0].commands)];
 
 function initCanvas() {
     canvas = document.createElement('canvas');
@@ -32,12 +68,8 @@ function initCanvas() {
 
 function loadImages() {
     var imagesUrls = [
+        'corner-1', 'corner-2', 'corner-3', 'corner-4', 'tile',
         'truck-blue',
-        'corner-1',
-        'corner-2',
-        'corner-3',
-        'corner-4',
-        'tile'
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -77,6 +109,17 @@ function render() {
         for(var y = 0; y < levelHeight; y++)
             context.drawImage(matrix[x][y].texture, viewOffsetLeft + x * TILE_SIZE,
                 viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+    for(var i = 0; i < trucks.length; i++) {
+        var truck = trucks[i];
+        context.drawImage(
+            images['truck-' + colorNamesTable[truck.color]],
+            viewOffsetLeft + truck.x * TILE_SIZE,
+            viewOffsetTop + truck.y * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+        );
+    }
 }
 
 function update() {
@@ -87,13 +130,30 @@ function events() {
 
 }
 
-function start() {
-    requestAnimationFrame(start);
+function mainLoop() {
+    requestAnimationFrame(mainLoop);
     events();
     update();
     render();
 }
 
+function start() {
+    mainLoop();
+}
+
+/*
+ * Tile Object.
+ */
 function Tile(texture) {
     this.texture = texture;
+}
+
+/*
+ * Truck Object.
+ */
+function Truck(x, y, color, commands) {
+    this.commands   = commands;
+    this.color      = color;
+    this.x          = x;
+    this.y          = y;
 }
