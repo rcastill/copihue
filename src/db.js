@@ -1,25 +1,3 @@
-function getTest() {
-    var user = $("#user-input").val();
-
-    $.ajax({
-        url: "db.php",
-        type: "POST",
-        data: {'username': user, 'passwd': $("#pwd-input").val(), 'email': user + "@example.com"},
-        success: function (data) {
-            $("#test-btn").html(data);
-        }
-
-    });
-}
-
-function registerViaEmail() {
-    //register
-}
-
-function loginViaEmail() {
-
-}
-
 function registerViaFacebook() {
     handleLoginState({
         connected: function (response) {
@@ -29,13 +7,15 @@ function registerViaFacebook() {
                     type: 'POST',
                     dataType: 'text',
                     data: {
+                        'req': 'login',
+                        'via':'facebook',
                         'username': response.name,
                         'email': response.email
                     },
 
                     success: function (data) {
                         if (data == 1) alert("success!");
-                        else alert("there was a problem with your request...");
+                        else alert(data);
                     },
 
                     error: function (data) {
@@ -55,6 +35,47 @@ function registerViaFacebook() {
     });
 }
 
-function loginViaFacebook() {
+$(document).ready(function () {
+    $("#user-form").submit(function (event) {
+        var formData = {
+            'via': 'email',
+            'email': $("#email-input").val(),
+            'password': $("#pwd-input").val()
+        };
 
-}
+        var user = $("#user-input");
+        var register = false;
+
+        if (user.is(":visible")) {
+            // Register
+            formData['req'] = 'register';
+            formData['username'] = user.val();
+            register = true;
+        } else {
+            formData['req'] = 'login';
+        }
+
+        $.ajax({
+            url: 'db.php',
+            type: 'POST',
+            dataType: 'text',
+            data: formData,
+
+            success: function (data) {
+                if (register) {
+                    if (data == 1) console.log("Success!");
+                    else alert(data);
+                } else {
+                    if (isNaN(data)) console.log(data);
+                    else alert("level_id " + data);
+                }
+            },
+
+            error: function (data) {
+                alert("Error!");
+            }
+        });
+
+        return false;
+    });
+});

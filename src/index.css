@@ -19,6 +19,33 @@ body {
     padding: 25px;
 }
 
-.fb-login-button {
-    color: #FFFFFF;
+input {
+    width: 280px;
+    padding: 10px;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    border-color: #CCCCCC;
+    outline: 0;
+}
+
+.upper-input {
+    border-radius: 5px 5px 0 0;
+}
+
+.lower-input {
+    border-radius: 0 0 5px 5px;
+}
+
+.fancy-button {
+    transition: 500ms;
+    background-color: #464545;
+    color: #e0e0e0;
+    padding: 5px 10px 5px 10px;
+    border-radius: 3px;
+    border-width: 0;
+    outline: 0;
+}
+
+.fancy-button:hover {
+    background-color: #c40114;
 }
