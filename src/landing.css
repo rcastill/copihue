@@ -1,6 +1,16 @@
+@font-face {
+    font-family: mCalibri;
+    src: url("../fonts/calibri.ttf");
+}
+
+@font-face {
+    font-family: CenturyGothic;
+    src: url("../fonts/gothic.ttf");
+}
+
 body {
     background-color: #F7F7F7;
-    font-family: Calibri;
+    font-family: Calibri, sans-serif;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -31,20 +41,20 @@ a {
     height: 100px;
     color: #FFF;
     margin: 0;
-    font-family: Century Gothic;
+    font-family: CenturyGothic, sans-serif;
     text-shadow: 0 0 10px #333;
 }
 
 .big-button {
+    font-family: CenturyGothic, sans-serif;
+    margin: 30px 30px 0 30px;
     background-color: #3366CC;
     border-radius: 10px;
     text-align: center;
     font-size: 25px;
     display: block;
     padding: 20px;
-    margin: 30px 30px 0 30px;
     color: #FFF;
-    font-family: Century Gothic;
     cursor: pointer;
     transition: 0.25s;
 }
