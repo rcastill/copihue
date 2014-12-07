@@ -1,9 +1,10 @@
 var TILE_SIZE = 75;
 
 var levelHeight = 9;
-var levelWidth = 14;
-var stop = true;
-var images = {};
+var levelWidth  = 14;
+var images      = {};
+var signal      = false;
+var stop        = true;
 
 var viewOffsetLeft;
 var viewOffsetTop;
@@ -121,21 +122,30 @@ function initGame(_initial) {
 
 function loadImages() {
     var imagesUrls = [
+        // ground tiles.
         'corner-1', 'corner-2', 'corner-3', 'corner-4', 'tile',
 
+        // trucks.
         'truck-blue', 'truck-red', 'truck-green', 'truck-brown', 'truck-orange',
 
+        // trees.
         'tree-top', 'tree-vertical-middle', 'tree-bottom', 'tree-solo-1', 'tree-solo-2', 'tree-right', 'tree-left',
         'tree-horizontal-middle',
 
+        // decoration.
         'pit', 'lake-top', 'lake-bottom',
 
+        // spots.
         'spot-blue', 'spot-red', 'spot-orange', 'spot-brown', 'spot-green',
         'spot-blue-marked', 'spot-red-marked', 'spot-green-marked', 'spot-brown-marked', 'spot-orange-marked',
 
+        // roads.
         'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
         'road-corner-downleft', 'road-corner-downright', 'road-corner-upright', 'road-corner-upleft', 'road-stop-up',
         'road-stop-down', 'road-stop-right', 'road-stop-left',
+
+        // truck addons.
+        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2',
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -174,45 +184,46 @@ function render() {
     for(var x = 0; x < levelWidth; x++)
         for(var y = 0; y < levelHeight; y++) {
             var tile = matrix[x][y];
+            var _x    = viewOffsetLeft + x * TILE_SIZE;
+            var _y    = viewOffsetTop + y * TILE_SIZE;
 
-            context.drawImage(tile.texture, viewOffsetLeft + x * TILE_SIZE,
-                viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            context.drawImage(tile.texture, _x, _y, TILE_SIZE, TILE_SIZE);
 
-            if(tile.marked !== false) {
-                context.drawImage(images['spot-' + tile.marked + '-marked'], viewOffsetLeft + x * TILE_SIZE,
-                    viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            } else {
-                if(tile.hasUpperColor()) {
-                    context.drawImage(images['spot-' + tile.upperColor], viewOffsetLeft + x * TILE_SIZE,
-                        viewOffsetTop + y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
-            }
+            if(tile.marked !== false)
+                context.drawImage(images['spot-' + tile.marked + '-marked'], _x, _y, TILE_SIZE, TILE_SIZE);
+            else if(tile.hasUpperColor())
+                context.drawImage(images['spot-' + tile.upperColor], _x, _y, TILE_SIZE, TILE_SIZE);
         }
 
     for(var i = 0; i < trucks.length; i++) {
         var truck = trucks[i];
-
         var angle = - truck.dir * Math.PI / 2;
-        x = viewOffsetLeft + truck.x * TILE_SIZE;
-        y = viewOffsetTop  + truck.y * TILE_SIZE;
+        var x     = viewOffsetLeft + truck.x * TILE_SIZE;
+        var y     = viewOffsetTop  + truck.y * TILE_SIZE;
 
         context.save();
-
         context.translate(x, y);
+
+        // fix position when truck is rotated.
         if(truck.dir == 2)      context.translate(TILE_SIZE, TILE_SIZE);
         else if(truck.dir == 1) context.translate(0, TILE_SIZE);
         else if(truck.dir == 3) context.translate(TILE_SIZE, 0);
 
+        // draws shadow.
+        if(truck.dir == 0)
+            context.drawImage(images['shadow-0'], -10, 2, 78, 35);
+        else if(truck.dir == 1)
+            context.drawImage(images['shadow-1'], 0, -90, 60, 83);
+        else if(truck.dir == 2)
+            context.drawImage(images['shadow-2'], -75, -75, 68, 44);
+
+        // rotate the context in order to draw the image.
         context.rotate(angle);
+        context.drawImage(images['truck-' + colorNamesTable[truck.color]], 0, 0, TILE_SIZE, TILE_SIZE);
 
-        context.drawImage(
-            images['truck-' + colorNamesTable[truck.color]],
-            0,
-            0,
-            TILE_SIZE,
-            TILE_SIZE
-        );
-
+        // draw signal if this truck has one.
+        if(signal === i)
+            context.drawImage(images['signal-truck'], 30, 22);
         context.restore();
     }
 }
@@ -222,12 +233,20 @@ function update() {
 
     for(var i = 0; i < trucks.length; i++) {
         var truck = trucks[i];
-        truck.update();
 
-        if(truck.isSpawning() !== false) {
-            var index = truck.isSpawning();
-            newTrucks.push(new Truck(truck._x, truck._y, hierarchy[index]));
-            truck.finish();
+        if(signal === false || i == signal) {
+            truck.update();
+
+            if(truck.isSpawning() !== false) {
+                var index = truck.isSpawning();
+                newTrucks.push(new Truck(truck._x, truck._y, hierarchy[index]));
+                truck.finish();
+            }
+
+            if(truck.hasSignal()) {
+                signal = signal === i? false : i;
+                truck.finish();
+            }
         }
     }
 
@@ -253,21 +272,26 @@ function mainLoop() {
     render();
 }
 
+/*
+ * Resets and finish all states in the game,
+ */
 function finish() {
     hierarchy = undefined;
-    trucks = [];
+    trucks    = [];
+    signal    = false;
+    stop      = true;
 
+    // add the initial trucks.
     for(var i = 0; i < initial.length; i += 3)
         trucks.push(new Truck(initial[i], initial[i + 1], {
             color: initial[i + 2],
             commands: []
         }));
 
+    // unmarks every tile.
     for(var x = 0; x < levelWidth; x++)
         for(var y = 0; y < levelHeight; y++)
             matrix[x][y].unMark();
-
-    stop = true;
 }
 
 function start(_hierarchy) {
@@ -448,4 +472,8 @@ Truck.prototype.isSpawning = function() {
     if(!isNaN(parseInt(this.performing)))
         return this.performing;
     return false;
+};
+
+Truck.prototype.hasSignal = function() {
+    return this.performing == 'signal';
 };

@@ -8,8 +8,18 @@
     src: url("../fonts/gothic.ttf");
 }
 
+@-webkit-keyframes opacityloop {
+    from {
+        opacity: 0.25;
+    }
+    to {
+        opacity: 0.5;
+    }
+}
+
 body {
-    background-color: #F7F7F7;
+    background: url("../landing/background.jpg") no-repeat right top;
+    background-size: cover;
     font-family: Calibri, sans-serif;
     margin: 0;
     padding: 0;
@@ -21,34 +31,43 @@ a {
     text-decoration: none;
 }
 
+#opacity {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FFF;
+
+    -webkit-animation: opacityloop 2s infinite alternate; /* Chrome, Safari, Opera */
+    animation: opacityloop 2s infinite alternate;
+}
+
 #landing-page {
     position: absolute;
     top: 100px;
     width: 800px;
     left: 50%;
     margin-left: -400px;
-    background-color: #FFF;
-    box-shadow: 0 0 10px #333;
     border-radius: 10px;
     padding-bottom: 30px;
 }
 
 #landing-page h1 {
     text-align: center;
-    background-image: url("../landing/header.png");
-    font-size: 60px;
+    font-size: 80px;
     padding: 15px 20px 20px 20px;
     height: 100px;
     color: #FFF;
     margin: 0;
     font-family: CenturyGothic, sans-serif;
-    text-shadow: 0 0 10px #333;
+    text-shadow: 0 0 15px #333;
 }
 
 .big-button {
     font-family: CenturyGothic, sans-serif;
     margin: 30px 30px 0 30px;
-    background-color: #3366CC;
+    background-color: #333;
     border-radius: 10px;
     text-align: center;
     font-size: 25px;
@@ -63,6 +82,8 @@ a {
     margin: 20px 20px -10px 20px;
     padding: 24px;
     font-size: 35px;
+
+    box-shadow: 0 0 100px #000;
 }
 
 #game-page {

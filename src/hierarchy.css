@@ -85,6 +85,7 @@ canvas {
     transition: 0.5s;
     cursor: pointer;
     font-size: 20px;
+    padding: 4px 4px 0px 4px;
 }
 
 #plus-button:hover {
