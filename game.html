@@ -17,7 +17,7 @@
         $('#resume').click(function() {
             $('#game-page').css('display', 'block');
             $('#hierarchy').addClass('initialize');
-            initGame([5, 4, '#779ECB']);
+            initGame([3, 4, '#779ECB']);
             initHierarchy();
             if(localStorage['copihue-saveSpace'] != "undefined")
                 take(JSON.parse(localStorage['copihue-saveSpace']));
@@ -59,5 +59,7 @@
         <a href="#" id="context-lock">lock / unlock</a>
     </div>
 </div>
+
+<div id="display-container"></div>
 </body>
 </html>

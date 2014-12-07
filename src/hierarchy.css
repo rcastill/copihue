@@ -181,3 +181,48 @@ canvas {
     display: block;
     padding: 5px;
 }
+
+#display-container {
+}
+
+@-webkit-keyframes text-display {
+    from {
+        top: -700px;
+    }
+
+    to {
+        left: 50%;
+    }
+}
+
+.text-display {
+    position: absolute;
+    width: 700px;
+    top: 50%;
+    left: 50%;
+    margin-left: -350px;
+    border-radius: 20px;
+
+    -webkit-animation: text-display 1s;
+    -moz-animation: text-display 1s;
+    -o-animation: text-display 1s;
+    animation: text-display 1s;
+}
+
+.text-display div {
+    position: relative;
+    color: #FFF;
+    text-align: center;
+    text-shadow: 0 0 30px #000;
+    padding: 5px;
+    width: 100%;
+}
+
+.text-display .display-back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #000;
+    opacity: 0.4;
+    border-radius: 20px;
+}

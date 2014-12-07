@@ -328,6 +328,34 @@ function getTrucksAndCommands() {
     return data;
 }
 
+function displayText(array, time) {
+    if(array.constructor !== Array)
+        console.error("displayText: argument is not an array");
+
+    var display = $('<div class="text-display">');
+    var back = $('<div class="display-back">');
+    display.append(back);
+
+    for(var i = 0; i < array.length; i+= 2) {
+        var text = array[i];
+        var size = array[i + 1];
+
+        var div = $('<div style="font-size: ' + size + 'px">');
+        div.text(text);
+        display.append(div);
+    }
+
+    $('#display-container').append(display);
+    display.css("margin-top", - display.outerHeight() / 2);
+
+    setTimeout(function() {
+        display.animate({
+            opacity: 0
+        }, function() {
+            $(this).remove();
+        });
+    }, time);
+}
 
 /*
  * Takes in a given hierarchy.

@@ -1,7 +1,11 @@
-var TILE_SIZE = 75;
+var SMOKE_FREQUENCY = 10;
+var PARTICLE_LIFE   = 30;
+var TILE_SIZE       = 75;
+var SMOKE_SIZE      = 20;
 
 var levelHeight = 9;
 var levelWidth  = 14;
+var particles   = [];
 var buttons     = {};
 var images      = {};
 var signal      = false;
@@ -51,9 +55,15 @@ function initGame(_initial) {
     viewOffsetLeft = (width - levelWidth * TILE_SIZE) / 2;
     viewOffsetTop  = (height - levelHeight * TILE_SIZE) / 2;
 
+    displayText([
+        "TruckScript", 80,
+        "Loading...", 40,
+    ], 3000);
+
     loadImages();
     createMatrix();
 
+    /*
     matrix[5][4].texture = images['road-horizontal'];
     matrix[6][4].texture = images['road-horizontal'];
     matrix[7][4].texture = images['road-horizontal'];
@@ -101,6 +111,71 @@ function initGame(_initial) {
     matrix[2][7].setUpperColor('brown');
 
     matrix[7][4].setButton('gray', [matrix[4][4]]);
+    */
+
+    matrix[3][4].texture = images['road-stop-left'];
+    matrix[4][4].texture = images['road-horizontal'];
+    matrix[5][4].texture = images['road-inter'];
+    matrix[6][4].texture = images['road-horizontal'];
+    matrix[7][4].texture = images['road-horizontal'];
+    matrix[8][4].texture = images['road-horizontal'];
+    matrix[9][4].texture = images['road-downy'];
+
+    matrix[5][5].texture = images['road-vertical'];
+    matrix[5][6].texture = images['road-corner-downleft'];
+    matrix[4][6].texture = images['road-horizontal'];
+    matrix[3][6].texture = images['road-stop-left'];
+
+    matrix[9][5].texture = images['road-vertical'];
+    matrix[9][6].texture = images['road-vertical'];
+    matrix[9][7].texture = images['road-upty'];
+    matrix[8][7].texture = images['road-horizontal'];
+    matrix[7][7].texture = images['road-corner-downright'];
+    matrix[7][6].texture = images['road-vertical'];
+    matrix[7][5].texture = images['road-stop-up'];
+    matrix[10][7].texture = images['road-horizontal'];
+    matrix[11][7].texture = images['road-stop-right'];
+
+    matrix[5][3].texture = images['road-vertical'];
+    matrix[5][2].texture = images['road-inter'];
+    matrix[4][2].texture = images['road-horizontal'];
+    matrix[6][2].texture = images['road-horizontal'];
+    matrix[3][2].texture = images['road-stop-left'];
+    matrix[7][2].texture = images['road-stop-right'];
+    matrix[5][1].texture = images['road-stop-up'];
+
+    matrix[10][4].texture = images['road-horizontal'];
+    matrix[11][4].texture = images['road-inter'];
+    matrix[12][4].texture = images['road-stop-right'];
+    matrix[11][3].texture = images['road-vertical'];
+    matrix[11][5].texture = images['road-vertical'];
+    matrix[11][2].texture = images['road-stop-up'];
+    matrix[11][6].texture = images['road-stop-down'];
+
+    matrix[4][3].texture = images['tree-solo-1'];
+    matrix[4][5].texture = images['tree-solo-2'];
+    matrix[6][3].texture = images['tree-solo-2'];
+
+    matrix[8][5].texture = images['tree-top'];
+    matrix[8][6].texture = images['tree-bottom'];
+
+    matrix[10][5].texture = images['tree-top'];
+    matrix[10][6].texture = images['tree-bottom'];
+
+    matrix[6][5].texture = images['lake-top'];
+    matrix[6][6].texture = images['lake-bottom'];
+
+    matrix[7][5].setUpperColor('red');
+    matrix[3][6].setUpperColor('red');
+    matrix[11][7].setUpperColor('blue');
+    matrix[5][1].setUpperColor('orange');
+    matrix[12][4].setUpperColor('orange');
+    matrix[3][2].setUpperColor('green');
+    matrix[7][2].setUpperColor('green');
+    matrix[11][2].setUpperColor('green');
+    matrix[11][6].setUpperColor('green');
+
+    matrix[9][4].setButton('gray', [matrix[5][3], matrix[5][5]]);
 
     totalMarks = 0;
     // obtains every mark and counts then.
@@ -160,7 +235,7 @@ function loadImages() {
         'road-stop-down', 'road-stop-right', 'road-stop-left',
 
         // truck addons.
-        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3',
+        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3', 'smoke',
 
         // buttons and death-ends.
         'button-gray', 'death-end-gray', 'death-end-gray-pass',
@@ -225,10 +300,22 @@ function render() {
                 else
                     context.drawImage(images['death-end-' + tile.connected + "-pass"], _x, _y, TILE_SIZE, TILE_SIZE);
             }
-
         }
 
-    for(var i = 0; i < trucks.length; i++) {
+    // draw particles.
+    for(var k = particles.length - 1; k > -1; k--) {
+        var particle = particles[k];
+        var factor   = (2 - particle.l / PARTICLE_LIFE);
+        var px       = viewOffsetLeft + particle.x * TILE_SIZE;
+        var py       = viewOffsetTop + particle.y * TILE_SIZE;
+
+        context.globalAlpha = particle.l / PARTICLE_LIFE;
+        context.drawImage(particle.t, px - particle.w * factor / 2, py - particle.h * factor / 2, particle.w * factor, particle.h * factor);
+    }
+    context.globalAlpha = 1;
+
+    // draw trucks.
+    for(var i = trucks.length - 1; i > -1; i--) {
         var truck = trucks[i];
         var angle = - truck.dir * Math.PI / 2;
         var x     = viewOffsetLeft + truck.x * TILE_SIZE;
@@ -246,9 +333,9 @@ function render() {
 
         // draws shadow.
         if(truck.dir == 0)
-            context.drawImage(images['shadow-0'], -10, 2, 78, 35);
+            context.drawImage(images['shadow-0'], -9, 4, 78, 35);
         else if(truck.dir == 1)
-            context.drawImage(images['shadow-1'], 0, -90, 60, 83);
+            context.drawImage(images['shadow-1'], 2, -76, 50, 68);
         else if(truck.dir == 2)
             context.drawImage(images['shadow-2'], -75, -75, 68, 44);
         else if(truck.dir == 3)
@@ -288,7 +375,9 @@ function update() {
             // check if the truck spawned.
             if(truck.isSpawning() !== false) {
                 var index = truck.isSpawning();
-                newTrucks.push(new Truck(truck._x, truck._y, hierarchy[index]));
+                var newTruck = new Truck(truck._x, truck._y, hierarchy[index]);
+                newTruck.dir = truck.dir;
+                newTrucks.push(newTruck);
                 truck.finish();
             }
 
@@ -314,11 +403,26 @@ function update() {
 
     if(totalMarks == markCount)
         win();
+
+    // update particles.
+    for(var k = particles.length - 1; k > -1; k--) {
+        var particle = particles[k];
+        particle.update();
+
+        if(particle.l <= 0)
+            particles.splice(k, 1);
+    }
 }
 
 function mainLoop() {
     requestAnimationFrame(mainLoop);
     if(!stop) update();
+    else {
+        TILE_SIZE += Math.sin(timer / 20) * 0.025;
+        viewOffsetLeft = (width - levelWidth * TILE_SIZE) / 2;
+        viewOffsetTop  = (height - levelHeight * TILE_SIZE) / 2;
+    }
+
     render();
     timer++;
 }
@@ -345,6 +449,8 @@ function finish() {
             matrix[x][y].unMark();
             matrix[x][y].pressed = false;
         }
+
+    particles = [];
 }
 
 function start(_hierarchy) {
@@ -439,6 +545,7 @@ function Truck(x, y, base) {
 
     this.performing = undefined;
     this.signalTime = 0;
+    this.smokeTimer = 0;
     this.lastTile   = undefined;
     this.head       = -1;
     this.dir        = 0;
@@ -467,6 +574,14 @@ Truck.prototype.update = function() {
             this.x = this._x;
             this.y = this._y;
             this.finish();
+        }
+
+        this.smokeTimer--;
+        if(this.smokeTimer <= 0) {
+            this.smokeTimer = SMOKE_FREQUENCY;
+            particles.push(new Particle(images['smoke'], this.x + 0.5 * Math.abs(vy) + (this.dir == 2 ? 1 : 0),
+                this.y + 0.5 * Math.abs(vx) + (this.dir == 1 ? 1 : 0),
+                SMOKE_SIZE, SMOKE_SIZE, vx * 0.01, vy * 0.01));
         }
 
     } else if(this.performing == 'left') {
@@ -572,4 +687,25 @@ Truck.prototype.isSpawning = function() {
 
 Truck.prototype.hasSignal = function() {
     return this.performing == 'signal';
+};
+
+/*
+ Particles.
+ */
+function Particle(texture, x, y, w, h, vx, vy) {
+    this.vx = vx;
+    this.vy = vy;
+    this.t  = texture;
+    this.x  = x;
+    this.y  = y;
+    this.w  = w;
+    this.h  = h;
+    this.l  = PARTICLE_LIFE;
+}
+
+// update particle position.
+Particle.prototype.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.l--;
 };
