@@ -172,13 +172,18 @@ function initGame(_initial) {
     matrix[6][5].texture = images['lake-top'];
     matrix[6][6].texture = images['lake-bottom'];
 
-    matrix[7][5].setUpperColor('red');
-    matrix[3][6].setUpperColor('red');
+    matrix[9][2].texture = images['building-one-1'];
+    matrix[10][2].texture = images['building-one-2'];
+    matrix[9][3].texture = images['building-one-3'];
+    matrix[10][3].texture = images['building-one-4'];
+
+    matrix[ 7][5].setUpperColor('red');
+    matrix[ 3][6].setUpperColor('red');
     matrix[11][7].setUpperColor('blue');
-    matrix[5][1].setUpperColor('orange');
+    matrix[ 5][1].setUpperColor('orange');
     matrix[12][4].setUpperColor('orange');
-    matrix[3][2].setUpperColor('green');
-    matrix[7][2].setUpperColor('green');
+    matrix[ 3][2].setUpperColor('green');
+    matrix[ 7][2].setUpperColor('green');
     matrix[11][2].setUpperColor('green');
     matrix[11][6].setUpperColor('green');
 
@@ -231,6 +236,7 @@ function loadImages() {
 
         // decoration.
         'pit', 'lake-top', 'lake-bottom',
+        'building-one-1', 'building-one-2', 'building-one-3', 'building-one-4',
 
         // spots.
         'spot-blue', 'spot-red', 'spot-orange', 'spot-brown', 'spot-green',
@@ -241,7 +247,7 @@ function loadImages() {
         'road-corner-downleft', 'road-corner-downright', 'road-corner-upright', 'road-corner-upleft', 'road-stop-up',
         'road-stop-down', 'road-stop-right', 'road-stop-left',
 
-        // truck addons.
+        // truck add-ons.
         'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3', 'smoke',
 
         // buttons and death-ends.
