@@ -3,8 +3,6 @@ var PARTICLE_LIFE   = 30;
 var TILE_SIZE       = 75;
 var SMOKE_SIZE      = 20;
 
-var levelHeight = 9;
-var levelWidth  = 14;
 var particles   = [];
 var buttons     = {};
 var images      = {};
@@ -16,6 +14,8 @@ var won         = false;
 
 var viewOffsetLeft;
 var viewOffsetTop;
+var levelHeight;
+var levelWidth;
 var totalMarks;
 var hierarchy;
 var context;
@@ -44,7 +44,11 @@ var colorCodesTable = {
 
 function initGame(jsonString) {
     levelData = JSON.parse(jsonString);
-    initial = levelData['initial'];
+
+    // save level data.
+    levelHeight = levelData.dim.y;
+    levelWidth  = levelData.dim.x;
+    initial     = levelData['initial'];
 
     canvas = document.createElement('canvas');
     context = canvas.getContext('2d');
@@ -69,145 +73,9 @@ function initGame(jsonString) {
     });
 
     loadImages();
+
     genMatrix();
-
-    /*
-    matrix[5][4].texture = images['road-horizontal'];
-    matrix[6][4].texture = images['road-horizontal'];
-    matrix[7][4].texture = images['road-horizontal'];
-    matrix[8][4].texture = images['road-horizontal'];
-    matrix[9][4].texture = images['road-lefty'];
-    matrix[9][3].texture = images['road-vertical'];
-    matrix[9][5].texture = images['road-vertical'];
-    matrix[4][4].texture = images['road-righty'];
-    matrix[4][3].texture = images['road-vertical'];
-    matrix[4][5].texture = images['road-vertical'];
-    matrix[4][6].texture = images['road-vertical'];
-    matrix[4][7].texture = images['road-corner-downleft'];
-    matrix[3][7].texture = images['road-horizontal'];
-    matrix[9][2].texture = images['road-corner-upleft'];
-    matrix[9][6].texture = images['road-corner-downleft'];
-    matrix[8][2].texture = images['road-horizontal'];
-    matrix[8][6].texture = images['road-horizontal'];
-    matrix[7][2].texture = images['road-stop-left'];
-    matrix[7][6].texture = images['road-stop-left'];
-
-    matrix[4][2].texture = images['road-stop-up'];
-    matrix[2][7].texture = images['road-stop-left'];
-
-    matrix[1][3].texture = images['tree-top'];
-    matrix[1][4].texture = images['tree-vertical-middle'];
-    matrix[1][5].texture = images['tree-bottom'];
-
-    matrix[12][3].texture = images['tree-top'];
-    matrix[12][4].texture = images['tree-vertical-middle'];
-    matrix[12][5].texture = images['tree-bottom'];
-
-    matrix[8][3].texture = images['tree-solo-1'];
-    matrix[8][5].texture = images['tree-solo-2'];
-    matrix[3][6].texture = images['tree-solo-1'];
-
-    matrix[3][1].texture = images['tree-left'];
-    matrix[4][1].texture = images['tree-horizontal-middle'];
-    matrix[5][1].texture = images['tree-right'];
-
-    matrix[5][5].texture = images['lake-top'];
-    matrix[5][6].texture = images['lake-bottom'];
-
-    matrix[7][6].setUpperColor('blue');
-    matrix[7][2].setUpperColor('red');
-    matrix[2][7].setUpperColor('brown');
-
-    matrix[7][4].setButton('gray', [matrix[4][4]]);
-    */
-
-    /*
-    matrix[3][4].texture = images['road-stop-left'];
-    matrix[4][4].texture = images['road-horizontal'];
-    matrix[5][4].texture = images['road-inter'];
-    matrix[6][4].texture = images['road-horizontal'];
-    matrix[7][4].texture = images['road-horizontal'];
-    matrix[8][4].texture = images['road-horizontal'];
-    matrix[9][4].texture = images['road-downy'];
-
-    matrix[5][5].texture = images['road-vertical'];
-    matrix[5][6].texture = images['road-corner-downleft'];
-    matrix[4][6].texture = images['road-horizontal'];
-    matrix[3][6].texture = images['road-stop-left'];
-
-    matrix[9][5].texture = images['road-vertical'];
-    matrix[9][6].texture = images['road-vertical'];
-    matrix[9][7].texture = images['road-upty'];
-    matrix[8][7].texture = images['road-horizontal'];
-    matrix[7][7].texture = images['road-corner-downright'];
-    matrix[7][6].texture = images['road-vertical'];
-    matrix[7][5].texture = images['road-stop-up'];
-    matrix[10][7].texture = images['road-horizontal'];
-    matrix[11][7].texture = images['road-stop-right'];
-
-    matrix[5][3].texture = images['road-vertical'];
-    matrix[5][2].texture = images['road-inter'];
-    matrix[4][2].texture = images['road-horizontal'];
-    matrix[6][2].texture = images['road-horizontal'];
-    matrix[3][2].texture = images['road-stop-left'];
-    matrix[7][2].texture = images['road-stop-right'];
-    matrix[5][1].texture = images['road-stop-up'];
-
-    matrix[10][4].texture = images['road-horizontal'];
-    matrix[11][4].texture = images['road-inter'];
-    matrix[12][4].texture = images['road-stop-right'];
-    matrix[11][3].texture = images['road-vertical'];
-    matrix[11][5].texture = images['road-vertical'];
-    matrix[11][2].texture = images['road-stop-up'];
-    matrix[11][6].texture = images['road-stop-down'];
-
-    matrix[4][3].texture = images['tree-solo-1'];
-    matrix[4][5].texture = images['tree-solo-2'];
-    matrix[6][3].texture = images['tree-solo-2'];
-
-    matrix[8][5].texture = images['tree-top'];
-    matrix[8][6].texture = images['tree-bottom'];
-
-    matrix[10][5].texture = images['tree-top'];
-    matrix[10][6].texture = images['tree-bottom'];
-
-    matrix[6][5].texture = images['lake-top'];
-    matrix[6][6].texture = images['lake-bottom'];
-
-    matrix[9][2].texture = images['building-one-1'];
-    matrix[10][2].texture = images['building-one-2'];
-    matrix[9][3].texture = images['building-one-3'];
-    matrix[10][3].texture = images['building-one-4'];
-    */
-
-    for(var key in levelData['map']) {
-        var pos = byteToPos(key);
-        var tex = levelData['map'][key].t;
-        var button = levelData['map'][key].b;
-        var mark = levelData['map'][key].m;
-
-        matrix[pos.x][pos.y].texture = images[tex];
-
-        if(button != undefined) {
-            var connections = [];
-            for(var i = 0; i < button.d.length; i+=2) {
-                connections.push(matrix[button.d[i]][button.d[i+1]]);
-            }
-            matrix[9][4].setButton(button.c, connections);
-        }
-    }
-
-    matrix[ 7][5].setUpperColor('red');
-    matrix[ 3][6].setUpperColor('red');
-    matrix[11][7].setUpperColor('blue');
-    matrix[ 5][1].setUpperColor('orange');
-    matrix[12][4].setUpperColor('orange');
-    matrix[ 3][2].setUpperColor('green');
-    matrix[ 7][2].setUpperColor('green');
-    matrix[11][2].setUpperColor('green');
-    matrix[11][6].setUpperColor('green');
-
-    matrix[9][4].setButton('gray', [matrix[5][3], matrix[5][5]]);
+    loadMap(levelData['map']);
 
     totalMarks = 0;
     // obtains every mark and counts then.
@@ -215,8 +83,8 @@ function initGame(jsonString) {
     for(var x = 0; x < levelWidth; x++) {
         for(var y = 0; y < levelHeight; y++) {
             // DEBUG: detect roads.
-            var sections = matrix[x][y].texture.src.split('/');
-            var filename = sections[sections.length - 1];
+            var sections     = matrix[x][y].texture.src.split('/');
+            var filename     = sections[sections.length - 1];
             var firstSection = filename.split('-')[0];
 
             if(firstSection == 'road') {
@@ -238,6 +106,8 @@ function initGame(jsonString) {
 
     $('#container').append(canvas);
 
+    /*
+    UNCOMMENT TO GET JSON MAP DATA FROM GAME.
     var map = {};
     for(var x = 0; x < levelWidth; x++) {
         for(var y = 0; y < levelHeight; y++) {
@@ -266,9 +136,33 @@ function initGame(jsonString) {
     }
 
     console.log(JSON.stringify(map));
+    */
 
     finish();
     mainLoop();
+}
+
+function loadMap(map) {
+    for(var key in map) {
+        var button  = map[key].b;
+        var mark    = map[key].m;
+        var pos     = byteToPos(key);
+        var tex     = map[key].t;
+
+        matrix[pos.x ][pos.y].texture = images[tex];
+
+        if(button != undefined) {
+            var connections = [];
+            for(var i = 0; i < button.d.length; i+=2) {
+                connections.push(matrix[button.d[i]][button.d[i+1]]);
+            }
+            matrix[pos.x ][pos.y].setButton(button.c, connections);
+        }
+
+        if(mark != undefined) {
+            matrix[pos.x ][pos.y].setUpperColor(mark);
+        }
+    }
 }
 
 function getConnectionArray(connections) {
@@ -306,9 +200,9 @@ function loadImages() {
         'pit', 'lake-top', 'lake-bottom',
         'building-one-1', 'building-one-2', 'building-one-3', 'building-one-4',
 
-        // spots.
-        'spot-blue', 'spot-red', 'spot-orange', 'spot-brown', 'spot-green',
-        'spot-blue-marked', 'spot-red-marked', 'spot-green-marked', 'spot-brown-marked', 'spot-orange-marked',
+        // marks.
+        'mark-blue', 'mark-red', 'mark-orange', 'mark-brown', 'mark-green',
+        'mark-blue-marked', 'mark-red-marked', 'mark-green-marked', 'mark-brown-marked', 'mark-orange-marked',
 
         // roads.
         'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
@@ -368,9 +262,9 @@ function render() {
 
             // draw mark if needed.
             if(tile.marked !== false)
-                context.drawImage(images['spot-' + tile.marked + '-marked'], _x, _y, TILE_SIZE, TILE_SIZE);
+                context.drawImage(images['mark-' + tile.marked + '-marked'], _x, _y, TILE_SIZE, TILE_SIZE);
             else if(tile.hasUpperColor())
-                context.drawImage(images['spot-' + tile.upperColor], _x, _y, TILE_SIZE, TILE_SIZE);
+                context.drawImage(images['mark-' + tile.upperColor], _x, _y, TILE_SIZE, TILE_SIZE);
 
             // draw button if it has one.
             if(tile.hasButton())
