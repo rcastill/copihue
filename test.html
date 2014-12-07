@@ -10,7 +10,12 @@
     <script src="src/index.js"></script>
 </head>
 <body>
-<div class="form-credentials">
+
+<div class="form-credentials" style="display: none;" id="box">
+    <div id="badge" style="display: none; text-align: center; margin-bottom: 20px">
+        <img src="koding/badge.png">
+    </div>
+
     <form id="user-form" style="width: 120%;">
         <input type="email" id="email-input" placeholder="email" class="upper-input" required>
         <div style="width: 100%;"><input type="text" id="user-input" placeholder="username"></div>
@@ -21,8 +26,9 @@
     <br>
     <p style="font-size: 11pt;" id="acc-disc">You don't have an account?</p>
     <button class="fancy-button" onclick="toggleLoginRegister();" id="reglog-toggle">Register</button><span style="padding: 10px">or</span>
-    <fb:login-button scope="public_profile,email" onlogin="registerViaFacebook();">
-    </fb:login-button>
+    <fb:login-button scope="public_profile,email" onlogin="registerViaFacebook();"></fb:login-button>
+    <br>
 </div>
+
 </body>
 </html>
