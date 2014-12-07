@@ -3,8 +3,6 @@ var PARTICLE_LIFE   = 30;
 var TILE_SIZE       = 75;
 var SMOKE_SIZE      = 20;
 
-var levelHeight = 9;
-var levelWidth  = 14;
 var particles   = [];
 var buttons     = {};
 var images      = {};
@@ -16,6 +14,8 @@ var won         = false;
 
 var viewOffsetLeft;
 var viewOffsetTop;
+var levelHeight;
+var levelWidth;
 var totalMarks;
 var hierarchy;
 var context;
@@ -44,7 +44,11 @@ var colorCodesTable = {
 
 function initGame(jsonString) {
     levelData = JSON.parse(jsonString);
-    initial = levelData['initial'];
+
+    // save level data.
+    levelHeight = levelData.dim.y;
+    levelWidth  = levelData.dim.x;
+    initial     = levelData['initial'];
 
     canvas = document.createElement('canvas');
     context = canvas.getContext('2d');
@@ -69,6 +73,7 @@ function initGame(jsonString) {
     });
 
     loadImages();
+
     genMatrix();
     loadMap(levelData['map']);
 
@@ -144,18 +149,18 @@ function loadMap(map) {
         var pos     = byteToPos(key);
         var tex     = map[key].t;
 
-        matrix[pos.x][pos.y].texture = images[tex];
+        matrix[pos.x ][pos.y].texture = images[tex];
 
         if(button != undefined) {
             var connections = [];
             for(var i = 0; i < button.d.length; i+=2) {
                 connections.push(matrix[button.d[i]][button.d[i+1]]);
             }
-            matrix[pos.x][pos.y].setButton(button.c, connections);
+            matrix[pos.x ][pos.y].setButton(button.c, connections);
         }
 
         if(mark != undefined) {
-            matrix[pos.x][pos.y].setUpperColor(mark);
+            matrix[pos.x ][pos.y].setUpperColor(mark);
         }
     }
 }
@@ -195,9 +200,9 @@ function loadImages() {
         'pit', 'lake-top', 'lake-bottom',
         'building-one-1', 'building-one-2', 'building-one-3', 'building-one-4',
 
-        // spots.
-        'spot-blue', 'spot-red', 'spot-orange', 'spot-brown', 'spot-green',
-        'spot-blue-marked', 'spot-red-marked', 'spot-green-marked', 'spot-brown-marked', 'spot-orange-marked',
+        // marks.
+        'mark-blue', 'mark-red', 'mark-orange', 'mark-brown', 'mark-green',
+        'mark-blue-marked', 'mark-red-marked', 'mark-green-marked', 'mark-brown-marked', 'mark-orange-marked',
 
         // roads.
         'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
@@ -257,9 +262,9 @@ function render() {
 
             // draw mark if needed.
             if(tile.marked !== false)
-                context.drawImage(images['spot-' + tile.marked + '-marked'], _x, _y, TILE_SIZE, TILE_SIZE);
+                context.drawImage(images['mark-' + tile.marked + '-marked'], _x, _y, TILE_SIZE, TILE_SIZE);
             else if(tile.hasUpperColor())
-                context.drawImage(images['spot-' + tile.upperColor], _x, _y, TILE_SIZE, TILE_SIZE);
+                context.drawImage(images['mark-' + tile.upperColor], _x, _y, TILE_SIZE, TILE_SIZE);
 
             // draw button if it has one.
             if(tile.hasButton())
