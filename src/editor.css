@@ -1,0 +1,56 @@
+body {
+    padding-right: 0;
+}
+
+canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.inspector {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: #333;
+}
+
+.inspector-list {
+    position: absolute;
+    margin-top: 0;
+    width: 260px;
+    right: 0;
+    top: 0;
+    padding: 80px 20px 20px 20px;
+    color: white;
+}
+
+.inspector-title {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 260px;
+    padding: 20px;
+    height: 20px;
+    background-color: #232323;
+    color: #E7E7E7;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.list-container {
+    list-style-type: none;
+    padding: 10px;
+}
+
+.asset-button {
+    margin: 3px;
+    border: 0;
+    background-color: transparent;
+    outline: none;
+}
+
+.asset-button:hover {
+    border: 2px solid #004DB4;
+}

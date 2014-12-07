@@ -3,12 +3,25 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Editor</title>
+    <link href='http://fonts.googleapis.com/css?family=Lato:700|Roboto+Condensed' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="src/editor.css">
     <script src="vendor/jquery-2.1.1.min.js"></script>
+    <script src="src/util.js"></script>
     <script src="src/editor.js"></script>
 </head>
 <body>
+<div id="editor" style="display: none;">
+    <canvas id="canvas"></canvas>
+</div>
 
-<canvas id="editor" width="800" height="600" style="border: 1px solid #000000"></canvas>
+<div class="inspector">
+    <div class="inspector-list" style="display: none;" id="inspector">
+        <ul id="list" class="list-container">
+        </ul>
+    </div>
+
+    <div class="inspector-title" style="display: none" id="title"></div>
+</div>
 
 </body>
 </html>
