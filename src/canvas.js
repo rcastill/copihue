@@ -2,6 +2,7 @@ var TILE_SIZE = 75;
 
 var levelHeight = 9;
 var levelWidth  = 14;
+var buttons     = {};
 var images      = {};
 var signal      = false;
 var timer       = 0;
@@ -99,9 +100,14 @@ function initGame(_initial) {
     matrix[7][2].setUpperColor('red');
     matrix[2][7].setUpperColor('brown');
 
+    matrix[7][4].setButton('gray', [matrix[4][4]]);
+
     totalMarks = 0;
+    // obtains every mark and counts then.
+    // sets every connections needed.
     for(var x = 0; x < levelWidth; x++) {
         for(var y = 0; y < levelHeight; y++) {
+            // DEBUG: detect roads.
             var sections = matrix[x][y].texture.src.split('/');
             var filename = sections[sections.length - 1];
             var firstSection = filename.split('-')[0];
@@ -110,8 +116,16 @@ function initGame(_initial) {
                 matrix[x][y].street = true;
             }
 
+            // counts the mark.
             if(matrix[x][y].hasUpperColor())
                 totalMarks++;
+
+            // set connections
+            if(matrix[x][y].hasButton()) {
+                for(var i = 0; i < matrix[x][y].connections.length; i++) {
+                    matrix[x][y].connections[i].connected = matrix[x][y].button;
+                }
+            }
         }
     }
 
@@ -146,7 +160,10 @@ function loadImages() {
         'road-stop-down', 'road-stop-right', 'road-stop-left',
 
         // truck addons.
-        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3'
+        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3',
+
+        // buttons and death-ends.
+        'button-gray', 'death-end-gray', 'death-end-gray-pass',
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -188,14 +205,27 @@ function render() {
             var _x    = viewOffsetLeft + x * TILE_SIZE;
             var _y    = viewOffsetTop + y * TILE_SIZE;
 
-            _x += Math.sin(timer / 10);
+            _x += Math.sin(timer / 10) * 1.25;
 
             context.drawImage(tile.texture, _x, _y, TILE_SIZE, TILE_SIZE);
 
+            // draw mark if needed.
             if(tile.marked !== false)
                 context.drawImage(images['spot-' + tile.marked + '-marked'], _x, _y, TILE_SIZE, TILE_SIZE);
             else if(tile.hasUpperColor())
                 context.drawImage(images['spot-' + tile.upperColor], _x, _y, TILE_SIZE, TILE_SIZE);
+
+            // draw button if it has one.
+            if(tile.hasButton())
+                context.drawImage(images['button-' + tile.button], _x, _y, TILE_SIZE, TILE_SIZE);
+
+            if(tile.hasConnection()) {
+                if(!buttons[tile.connected].isButtonPressed())
+                    context.drawImage(images['death-end-' + tile.connected], _x, _y, TILE_SIZE, TILE_SIZE);
+                else
+                    context.drawImage(images['death-end-' + tile.connected + "-pass"], _x, _y, TILE_SIZE, TILE_SIZE);
+            }
+
         }
 
     for(var i = 0; i < trucks.length; i++) {
@@ -204,7 +234,7 @@ function render() {
         var x     = viewOffsetLeft + truck.x * TILE_SIZE;
         var y     = viewOffsetTop  + truck.y * TILE_SIZE;
 
-        x += Math.sin(timer / 10);
+        x += Math.sin(timer / 10) * 1.25;
 
         context.save();
         context.translate(x, y);
@@ -229,8 +259,11 @@ function render() {
         context.drawImage(images['truck-' + colorNamesTable[truck.color]], 0, 0, TILE_SIZE, TILE_SIZE);
 
         // draw signal if this truck has one.
-        if(signal === i)
+        if(signal === i) {
+            context.globalAlpha = Math.abs(Math.sin(truck.signalTime++ / 10) * 0.5) + 0.5;
             context.drawImage(images['signal-truck'], 30, 22);
+            context.globalAlpha = 1;
+        }
         context.restore();
     }
 }
@@ -241,15 +274,25 @@ function update() {
     for(var i = 0; i < trucks.length; i++) {
         var truck = trucks[i];
 
+        // update only if signal is off or the signal is his.
         if(signal === false || i == signal) {
             truck.update();
 
+            // check truck position.
+            var onTile = matrix[parseInt(truck.x)][parseInt(truck.y)];
+            if(truck.lastTile != onTile && onTile.hasButton())
+                matrix[parseInt(truck.x)][parseInt(truck.y)].toggleButton();
+
+            truck.lastTile = onTile;
+
+            // check if the truck spawned.
             if(truck.isSpawning() !== false) {
                 var index = truck.isSpawning();
                 newTrucks.push(new Truck(truck._x, truck._y, hierarchy[index]));
                 truck.finish();
             }
 
+            // check if the truck has a signal.
             if(truck.hasSignal()) {
                 signal = signal === i? false : i;
                 truck.finish();
@@ -277,7 +320,6 @@ function mainLoop() {
     requestAnimationFrame(mainLoop);
     if(!stop) update();
     render();
-
     timer++;
 }
 
@@ -297,10 +339,12 @@ function finish() {
             commands: []
         }));
 
-    // unmarks every tile.
+    // unmarks every tile and de-press the button.
     for(var x = 0; x < levelWidth; x++)
-        for(var y = 0; y < levelHeight; y++)
+        for(var y = 0; y < levelHeight; y++) {
             matrix[x][y].unMark();
+            matrix[x][y].pressed = false;
+        }
 }
 
 function start(_hierarchy) {
@@ -315,7 +359,8 @@ function start(_hierarchy) {
 }
 
 function lose() {
-
+    alert("You Lose");
+    $('#play-button').trigger('click');
 }
 
 function win() {
@@ -327,17 +372,46 @@ function win() {
  * Tile Object.
  */
 function Tile(texture) {
-    this.texture = texture;
-    this.marked  = false;
+    this.texture     = texture;
+    this.connections = undefined;
+    this.connected   = undefined;
+    this.pressed     = false;
+    this.marked      = false;
+    this.button      = false;
 }
 
 Tile.prototype.setUpperColor = function(color) {
     this.upperColor = color;
 };
 
+Tile.prototype.hasConnection = function() {
+    return this.connected != undefined;
+}
+
 Tile.prototype.hasUpperColor = function() {
-    if(this.upperColor != undefined)
-        return true;
+    return this.upperColor != undefined;
+};
+
+Tile.prototype.hasButton = function() {
+    return this.button;
+};
+
+Tile.prototype.toggleButton = function() {
+    this.pressed = !this.pressed;
+};
+
+Tile.prototype.isButtonPressed = function() {
+    return this.pressed;
+};
+
+Tile.prototype.setButton = function(color, connection) {
+    if(connection.constructor !== Array)
+        console.error("Tile.setButton: connection is not array.");
+
+    this.connections = connection;
+    this.button     = color;
+
+    buttons[color] = this;
 };
 
 Tile.prototype.isStreet = function() {
@@ -363,11 +437,13 @@ function Truck(x, y, base) {
     this.x          = x;
     this.y          = y;
 
-    this._x = x;
-    this._y = y;
-    this.dir = 0;
-    this.head = -1;
     this.performing = undefined;
+    this.signalTime = 0;
+    this.lastTile   = undefined;
+    this.head       = -1;
+    this.dir        = 0;
+    this._x         = x;
+    this._y         = y;
 }
 
 Truck.prototype.update = function() {
@@ -387,7 +463,7 @@ Truck.prototype.update = function() {
         this.x += vx * 0.05;
         this.y += vy * 0.05;
 
-        if (parseInt(this.x * 10) == this._x * 10 && parseInt(this.y * 10) == this._y * 10) {
+        if(parseInt(this.x * 10) == this._x * 10 && parseInt(this.y * 10) == this._y * 10) {
             this.x = this._x;
             this.y = this._y;
             this.finish();
@@ -405,6 +481,39 @@ Truck.prototype.update = function() {
         matrix[this._x][this._y].mark(colorNamesTable[this.color]);
         this.finish();
     }
+
+    var previousX = this._x;
+    var previousY = this._y;
+
+    if(this._x < 0 || this._x > levelWidth - 1) {
+        this._x = previousX;
+        this.finish();
+        lose();
+    }
+
+    if(this._y < 0 || this._y > levelHeight - 1) {
+        this._y = previousY;
+        this.finish();
+        lose();
+    }
+
+    if(!matrix[this._x][this._y].isStreet()) {
+        this._x = previousX;
+        this._y = previousY;
+        this.finish();
+        lose();
+    }
+
+    // check truck position.
+    var onTile = matrix[parseInt(this.x)][parseInt(this.y)];
+    if(this.performing === undefined && this.lastTile != onTile && onTile.hasButton())
+        matrix[parseInt(this.x)][parseInt(this.y)].toggleButton();
+    this.lastTile = onTile;
+
+    // checks if the position the truck is standing on is a death end.
+    if(this.performing === undefined && onTile.hasConnection())
+        if(!buttons[onTile.connected].isButtonPressed())
+            lose();
 };
 
 Truck.prototype.decide = function() {
@@ -415,9 +524,6 @@ Truck.prototype.decide = function() {
 
     if(command.split('-')[0] == 'command') {
         this.performing = command.split('-')[1];
-        var previousX = this._x;
-        var previousY = this._y;
-
         if(this.performing == "go") {
             switch(this.dir) {
                 case 0:
@@ -435,25 +541,6 @@ Truck.prototype.decide = function() {
                 case 3:
                     this._y += 1;
                     break;
-            }
-
-            if(this._x < 0 || this._x > levelWidth - 1) {
-                this._x = previousX;
-                this.finish();
-                lose();
-            }
-
-            if(this._y < 0 || this._y > levelHeight - 1) {
-                this._y = previousY;
-                this.finish();
-                lose();
-            }
-
-            if(!matrix[this._x][this._y].isStreet()) {
-                this._x = previousX;
-                this._y = previousY;
-                this.finish();
-                lose();
             }
         }
 
