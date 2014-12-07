@@ -328,7 +328,7 @@ function getTrucksAndCommands() {
     return data;
 }
 
-function displayText(array, time) {
+function displayText(array, time, callback) {
     if(array.constructor !== Array)
         console.error("displayText: argument is not an array");
 
@@ -354,6 +354,8 @@ function displayText(array, time) {
         }, function() {
             $(this).remove();
         });
+        if(callback != undefined)
+            callback();
     }, time);
 }
 

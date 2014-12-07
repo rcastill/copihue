@@ -11,6 +11,8 @@ var images      = {};
 var signal      = false;
 var timer       = 0;
 var stop        = true;
+var lost        = false;
+var won         = false;
 
 var viewOffsetLeft;
 var viewOffsetTop;
@@ -57,8 +59,13 @@ function initGame(_initial) {
 
     displayText([
         "TruckScript", 80,
-        "Loading...", 40,
-    ], 3000);
+        "Welcome!", 40,
+    ], 2000, function() {
+        displayText([
+            "DevMap Level", 80,
+            "Author: Shelo", 30
+        ], 3000);
+    });
 
     loadImages();
     createMatrix();
@@ -239,6 +246,7 @@ function loadImages() {
 
         // buttons and death-ends.
         'button-gray', 'death-end-gray', 'death-end-gray-pass',
+        'button-purple', 'death-end-purple', 'death-end-purple-pass',
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -435,6 +443,8 @@ function finish() {
     trucks    = [];
     signal    = false;
     stop      = true;
+    lost      = false;
+    won       = false;
 
     // add the initial trucks.
     for(var i = 0; i < initial.length; i += 3)
@@ -465,13 +475,28 @@ function start(_hierarchy) {
 }
 
 function lose() {
-    alert("You Lose");
-    $('#play-button').trigger('click');
+    if(lost) return;
+
+    displayText([
+        "Try again!", 80
+    ], 2000, function() {
+        $('#play-button').trigger('click');
+    });
+
+    lost = true;
 }
 
 function win() {
-    alert("You won!");
-    $('#play-button').trigger('click');
+    if(won) return;
+
+    displayText([
+        "You won!", 80,
+        "Congratulations", 40
+    ], 2000, function() {
+        $('#play-button').trigger('click');
+    });
+
+    won = true;
 }
 
 /*
@@ -580,8 +605,7 @@ Truck.prototype.update = function() {
         if(this.smokeTimer <= 0) {
             this.smokeTimer = SMOKE_FREQUENCY;
             particles.push(new Particle(images['smoke'], this.x + 0.5 * Math.abs(vy) + (this.dir == 2 ? 1 : 0),
-                this.y + 0.5 * Math.abs(vx) + (this.dir == 1 ? 1 : 0),
-                SMOKE_SIZE, SMOKE_SIZE, vx * 0.01, vy * 0.01));
+                this.y + 0.5 * Math.abs(vx) + (this.dir == 1 ? 1 : 0), SMOKE_SIZE, SMOKE_SIZE, vx * 0.01, vy * 0.01));
         }
 
     } else if(this.performing == 'left') {
@@ -597,24 +621,17 @@ Truck.prototype.update = function() {
         this.finish();
     }
 
-    var previousX = this._x;
-    var previousY = this._y;
-
     if(this._x < 0 || this._x > levelWidth - 1) {
-        this._x = previousX;
         this.finish();
         lose();
     }
 
     if(this._y < 0 || this._y > levelHeight - 1) {
-        this._y = previousY;
         this.finish();
         lose();
     }
 
     if(!matrix[this._x][this._y].isStreet()) {
-        this._x = previousX;
-        this._y = previousY;
         this.finish();
         lose();
     }
