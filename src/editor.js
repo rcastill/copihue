@@ -169,7 +169,7 @@ function updateBlockPosition() {
 
 
 function clear() {
-    editor.context.fillStyle = "#836953";
+    editor.context.fillStyle = "#91DE01";
     var width = editor.canvas.width;
     var height = editor.canvas.height;
     editor.context.clearRect(0, 0, width, height);
@@ -180,8 +180,7 @@ function mainloop() {
     clear();
     updateBlockPosition();
     inspectorTitle("Inspector (" + bpos.x + ", " + bpos.y + ")");
-    grid("#B2B2B2");
-    //renderMap();
+    grid("#333");
     renderMap();
     drawPositionSupport();
     drawSelected();

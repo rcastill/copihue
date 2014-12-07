@@ -1,13 +1,13 @@
 body {
     padding-right: 0;
-    background-color: #f0f0f0;
+    background-color: #836953;
 }
 
 canvas {
     position: absolute;
     left: 0;
     top: 0;
-    box-shadow: 0 0 20px #000000;
+    box-shadow: 0 0 20px #333;
 }
 
 .inspector {
