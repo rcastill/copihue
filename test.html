@@ -4,22 +4,25 @@
     <meta charset="UTF-8">
     <title>test</title>
     <script src="vendor/jquery-2.1.1.min.js"></script>
+    <link rel="stylesheet" href="src/index.css">
     <script src="src/fb.js"></script>
     <script src="src/db.js"></script>
+    <script src="src/index.js"></script>
 </head>
 <body>
+<div class="form-credentials">
+    <form id="user-form" style="width: 120%;">
+        <input type="email" id="email-input" placeholder="email" class="upper-input" required>
+        <div style="width: 100%;"><input type="text" id="user-input" placeholder="username"></div>
+        <input type="password" id="pwd-input" placeholder="password" class="lower-input" required>
+        <button type="submit" style="visibility: hidden"></button>
+    </form>
 
-<!--suppress HtmlFormInputWithoutLabel -->
-<input type="text" id="user-input" placeholder="username">
-<input type="password" id="pwd-input" placeholder="password">
-<button id="test-btn">register</button>
-
-<br>
-
-<fb:login-button scope="public_profile,email" onlogin="registerViaFacebook();">
-</fb:login-button>
-<p id="user-data"></p>
-<button onclick="disconnect()">logout</button>
-
+    <br>
+    <p style="font-size: 11pt;" id="acc-disc">You don't have an account?</p>
+    <button class="fancy-button" onclick="toggleLoginRegister();" id="reglog-toggle">Register</button><span style="padding: 10px">or</span>
+    <fb:login-button scope="public_profile,email" onlogin="registerViaFacebook();">
+    </fb:login-button>
+</div>
 </body>
 </html>
