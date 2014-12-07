@@ -3,7 +3,8 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Team Copihue's Game</title>
-    <link rel="stylesheet" href="src/game.css"/>
+    <link rel="stylesheet" href="src/landing.css"/>
+    <link rel="stylesheet" href="src/hierarchy.css"/>
     <script src="vendor/jquery-2.1.1.min.js"></script>
     <script src="vendor/jquery-ui.min.js"></script>
     <script src="src/hierarchy.js"></script>
@@ -12,33 +13,49 @@
     <script>
     $(document).ready(function() {
         $(document).disableSelection();
-        initGame([5, 4, '#779ECB']);
-        initHierarchy();
+
+        $('#resume').click(function() {
+            $('#game-page').css('display', 'block');
+            $('#hierarchy').addClass('initialize');
+            initGame([5, 4, '#779ECB']);
+            initHierarchy();
+            if(localStorage['copihue-saveSpace'] != "undefined")
+                take(JSON.parse(localStorage['copihue-saveSpace']));
+        });
     });
     </script>
 </head>
 <body>
-<div id="container"></div>
-
-<div id="hierarchy">
-    <h1>Commands</h1>
-    <div>
-        <img class="nav-command" id="command-go" src="img/go.png">
-        <img class="nav-command" id="command-right" src="img/right.png">
-        <img class="nav-command" id="command-left" src="img/left.png">
-        <img class="nav-command" id="command-paint" src="img/paint.png">
-    </div>
-    <h1>Hierarchy</h1>
-    <div id="trucks"></div>
-    <div id="plus-button">+</div>
-    <div id="action-bar">
-        <div id="play-button"></div>
-    </div>
+<div id="landing-page">
+    <h1>Welcome!</h1>
+    <div class="big-button" id="resume">Resume Game</div>
+    <div class="big-button">Level Editor</div>
+    <div class="big-button">Close session</div>
 </div>
 
-<div id="context">
-    <a href="#" id="context-delete">delete</a>
-    <a href="#" id="context-lock">lock / unlock</a>
+<div id="game-page">
+    <div id="container"></div>
+    <div id="hierarchy">
+        <h1>Commands</h1>
+        <div>
+            <img class="nav-command" id="command-go" src="img/go.png">
+            <img class="nav-command" id="command-right" src="img/right.png">
+            <img class="nav-command" id="command-left" src="img/left.png">
+            <img class="nav-command" id="command-mark" src="img/mark.png">
+        </div>
+        <h1>Hierarchy</h1>
+        <div id="trucks"></div>
+        <div id="plus-button">+</div>
+        <div id="action-bar">
+            <div id="save-button"></div>
+            <div id="play-button"></div>
+        </div>
+    </div>
+
+    <div id="context">
+        <a href="#" id="context-delete">delete</a>
+        <a href="#" id="context-lock">lock / unlock</a>
+    </div>
 </div>
 </body>
 </html>
