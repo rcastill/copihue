@@ -4,6 +4,7 @@ var levelHeight = 9;
 var levelWidth  = 14;
 var images      = {};
 var signal      = false;
+var timer       = 0;
 var stop        = true;
 
 var viewOffsetLeft;
@@ -145,7 +146,7 @@ function loadImages() {
         'road-stop-down', 'road-stop-right', 'road-stop-left',
 
         // truck addons.
-        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2',
+        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3'
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -187,6 +188,8 @@ function render() {
             var _x    = viewOffsetLeft + x * TILE_SIZE;
             var _y    = viewOffsetTop + y * TILE_SIZE;
 
+            _x += Math.sin(timer / 10);
+
             context.drawImage(tile.texture, _x, _y, TILE_SIZE, TILE_SIZE);
 
             if(tile.marked !== false)
@@ -200,6 +203,8 @@ function render() {
         var angle = - truck.dir * Math.PI / 2;
         var x     = viewOffsetLeft + truck.x * TILE_SIZE;
         var y     = viewOffsetTop  + truck.y * TILE_SIZE;
+
+        x += Math.sin(timer / 10);
 
         context.save();
         context.translate(x, y);
@@ -216,6 +221,8 @@ function render() {
             context.drawImage(images['shadow-1'], 0, -90, 60, 83);
         else if(truck.dir == 2)
             context.drawImage(images['shadow-2'], -75, -75, 68, 44);
+        else if(truck.dir == 3)
+            context.drawImage(images['shadow-3'], -75, -10, 46, 72);
 
         // rotate the context in order to draw the image.
         context.rotate(angle);
@@ -270,6 +277,8 @@ function mainLoop() {
     requestAnimationFrame(mainLoop);
     if(!stop) update();
     render();
+
+    timer++;
 }
 
 /*
