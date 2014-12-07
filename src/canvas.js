@@ -42,8 +42,9 @@ var colorCodesTable = {
     'orange': '#FFB347'
 };
 
-function initGame(_initial) {
-    initial = _initial;
+function initGame(jsonString) {
+    levelData = JSON.parse(jsonString);
+    initial = levelData['initial'];
 
     canvas = document.createElement('canvas');
     context = canvas.getContext('2d');
@@ -68,7 +69,7 @@ function initGame(_initial) {
     });
 
     loadImages();
-    createMatrix();
+    genMatrix();
 
     /*
     matrix[5][4].texture = images['road-horizontal'];
@@ -120,6 +121,7 @@ function initGame(_initial) {
     matrix[7][4].setButton('gray', [matrix[4][4]]);
     */
 
+    /*
     matrix[3][4].texture = images['road-stop-left'];
     matrix[4][4].texture = images['road-horizontal'];
     matrix[5][4].texture = images['road-inter'];
@@ -176,6 +178,24 @@ function initGame(_initial) {
     matrix[10][2].texture = images['building-one-2'];
     matrix[9][3].texture = images['building-one-3'];
     matrix[10][3].texture = images['building-one-4'];
+    */
+
+    for(var key in levelData['map']) {
+        var pos = byteToPos(key);
+        var tex = levelData['map'][key].t;
+        var button = levelData['map'][key].b;
+        var mark = levelData['map'][key].m;
+
+        matrix[pos.x][pos.y].texture = images[tex];
+
+        if(button != undefined) {
+            var connections = [];
+            for(var i = 0; i < button.d.length; i+=2) {
+                connections.push(matrix[button.d[i]][button.d[i+1]]);
+            }
+            matrix[9][4].setButton(button.c, connections);
+        }
+    }
 
     matrix[ 7][5].setUpperColor('red');
     matrix[ 3][6].setUpperColor('red');
@@ -218,8 +238,56 @@ function initGame(_initial) {
 
     $('#container').append(canvas);
 
+    var map = {};
+    for(var x = 0; x < levelWidth; x++) {
+        for(var y = 0; y < levelHeight; y++) {
+            if(matrix[x][y]) {
+                var sections = matrix[x][y].texture.src.split('/');
+                var filename = sections[sections.length - 1];
+                var firstSection = filename.split('-')[0];
+
+                if(firstSection != 'corner' && filename != "tile.png") {
+                    var index = posToByte(x, y);
+                    map[index] = {
+                        t: filename.replace(".png", "")
+                    };
+
+                    if(matrix[x][y].hasButton())
+                        map[index].b = {
+                            "c": matrix[x][y].button,
+                            "d": getConnectionArray(matrix[x][y].connections)
+                        };
+
+                    if(matrix[x][y].hasUpperColor())
+                        map[index].m = matrix[x][y].upperColor;
+                }
+            }
+        }
+    }
+
+    console.log(JSON.stringify(map));
+
     finish();
     mainLoop();
+}
+
+function getConnectionArray(connections) {
+    var positions = [];
+    for(var i = 0; i < connections.length; i++) {
+        var pos = findTilePos(connections[i]);
+        positions.push(pos.x);
+        positions.push(pos.y);
+    }
+    return positions;
+}
+
+function findTilePos(tile) {
+    for(var x = 0; x < levelWidth; x++) {
+        for(var y = 0; y < levelHeight; y++) {
+            if(matrix[x][y] == tile)
+                return {x: x, y: y};
+        }
+    }
 }
 
 function loadImages() {
@@ -250,9 +318,9 @@ function loadImages() {
         // truck add-ons.
         'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3', 'smoke',
 
-        // buttons and death-ends.
-        'button-gray', 'death-end-gray', 'death-end-gray-pass',
-        'button-purple', 'death-end-purple', 'death-end-purple-pass',
+        // buttons and deathends.
+        'button-gray', 'deathend-gray', 'deathend-gray-pass',
+        'button-purple', 'deathend-purple', 'deathend-purple-pass',
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -261,7 +329,7 @@ function loadImages() {
     }
 }
 
-function createMatrix() {
+function genMatrix() {
     matrix = [];
 
     for(var x = 0; x < levelWidth; x++) {
@@ -310,9 +378,9 @@ function render() {
 
             if(tile.hasConnection()) {
                 if(!buttons[tile.connected].isButtonPressed())
-                    context.drawImage(images['death-end-' + tile.connected], _x, _y, TILE_SIZE, TILE_SIZE);
+                    context.drawImage(images['deathend-' + tile.connected], _x, _y, TILE_SIZE, TILE_SIZE);
                 else
-                    context.drawImage(images['death-end-' + tile.connected + "-pass"], _x, _y, TILE_SIZE, TILE_SIZE);
+                    context.drawImage(images['deathend-' + tile.connected + "-pass"], _x, _y, TILE_SIZE, TILE_SIZE);
             }
         }
 

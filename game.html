@@ -9,6 +9,7 @@
     <script src="vendor/jquery-ui.min.js"></script>
     <script src="src/hierarchy.js"></script>
     <script src="src/canvas.js"></script>
+    <script src="src/util.js"></script>
 
     <script>
     $(document).ready(function() {
@@ -17,7 +18,8 @@
         $('#resume').click(function() {
             $('#game-page').css('display', 'block');
             $('#hierarchy').addClass('initialize');
-            initGame([3, 4, '#779ECB']);
+
+            initGame('{"map": {"33":{"t":"road-stop-left","m":"green"},"35":{"t":"road-stop-left"},"37":{"t":"road-stop-left","m":"red"},"49":{"t":"road-horizontal"},"50":{"t":"tree-solo-1"},"51":{"t":"road-horizontal"},"52":{"t":"tree-solo-2"},"53":{"t":"road-horizontal"},"64":{"t":"road-stop-up","m":"orange"},"65":{"t":"road-inter"},"66":{"t":"road-vertical"},"67":{"t":"road-inter"},"68":{"t":"road-vertical"},"69":{"t":"road-corner-downleft"},"81":{"t":"road-horizontal"},"82":{"t":"tree-solo-2"},"83":{"t":"road-horizontal"},"84":{"t":"lake-top"},"85":{"t":"lake-bottom"},"97":{"t":"road-stop-right","m":"green"},"99":{"t":"road-horizontal"},"100":{"t":"road-stop-up","m":"red"},"101":{"t":"road-vertical"},"102":{"t":"road-corner-downright"},"115":{"t":"road-horizontal"},"116":{"t":"tree-top"},"117":{"t":"tree-bottom"},"118":{"t":"road-horizontal"},"129":{"t":"building-one-1"},"130":{"t":"building-one-3"},"131":{"t":"road-downy","b":{"c":"gray","d":[5,3,5,5]}},"132":{"t":"road-vertical"},"133":{"t":"road-vertical"},"134":{"t":"road-upty"},"145":{"t":"building-one-2"},"146":{"t":"building-one-4"},"147":{"t":"road-horizontal"},"148":{"t":"tree-top"},"149":{"t":"tree-bottom"},"150":{"t":"road-horizontal"},"161":{"t":"road-stop-up","m":"green"},"162":{"t":"road-vertical"},"163":{"t":"road-inter"},"164":{"t":"road-vertical"},"165":{"t":"road-stop-down","m":"green"},"166":{"t":"road-stop-right","m":"blue"},"179":{"t":"road-stop-right","m":"orange"}}, "initial": [3, 4, "#779ECB"]}');
             initHierarchy();
             if(localStorage['copihue-saveSpace'] != "undefined")
                 take(JSON.parse(localStorage['copihue-saveSpace']));
