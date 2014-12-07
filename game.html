@@ -7,21 +7,95 @@
     <link rel="stylesheet" href="src/hierarchy.css"/>
     <script src="vendor/jquery-2.1.1.min.js"></script>
     <script src="vendor/jquery-ui.min.js"></script>
+    <script src="src/util.js"></script>
     <script src="src/hierarchy.js"></script>
     <script src="src/canvas.js"></script>
-    <script src="src/util.js"></script>
+    <script src="src/levelcase.js"></script>
 
     <script>
+    var ids;
+    var loaded = false;
+
+    $.ajax({
+        dataType: "json",
+        url: "http://104.131.173.250/koding/dlevels.php",
+        type: 'GET',
+        success: function(data) {
+            ids = data;
+            $('#show-levels').removeClass('loading').text($('#show-levels').attr("data-ready"));
+        },
+
+        error: function() {
+            console.log("Sorry!, ajax error :(");
+        }
+    });
+
+    function play(data) {
+        if($('#resume').hasClass('loading'))
+            return;
+
+        $('#game-page').css('display', 'block');
+        $('#hierarchy').addClass('initialize');
+
+        // initialize components.
+        initGame(data.data);
+        initHierarchy();
+
+        // load saved hierarchy.
+        if(localStorage['copihue-saveSpace'] != "undefined")
+            take(JSON.parse(localStorage['copihue-saveSpace']));
+
+        // display text.
+        displayText([
+            data.title, 80,
+            "Author: " + data.author, 30
+        ], 3000);
+    }
+
     $(document).ready(function() {
         $(document).disableSelection();
-        $('#resume').click(function() {
-            $('#game-page').css('display', 'block');
-            $('#hierarchy').addClass('initialize');
 
-            initGame('{"dim": {"x": "14", "y": "9"}, "map": {"17":{"t":"road-stop-left","m":"green"},"19":{"t":"road-stop-left"},"21":{"t":"road-stop-left","m":"red"},"33":{"t":"road-horizontal"},"34":{"t":"tree-solo-1"},"35":{"t":"road-horizontal"},"36":{"t":"tree-solo-2"},"37":{"t":"road-horizontal"},"48":{"t":"road-stop-up","m":"orange"},"49":{"t":"road-inter"},"50":{"t":"road-vertical"},"51":{"t":"road-inter"},"52":{"t":"road-vertical"},"53":{"t":"road-corner-downleft"},"65":{"t":"road-horizontal"},"66":{"t":"tree-solo-2"},"67":{"t":"road-horizontal"},"68":{"t":"lake-top"},"69":{"t":"lake-bottom"},"81":{"t":"road-stop-right","m":"green"},"83":{"t":"road-horizontal"},"84":{"t":"road-stop-up","m":"red"},"85":{"t":"road-vertical"},"86":{"t":"road-corner-downright"},"99":{"t":"road-horizontal"},"100":{"t":"tree-top"},"101":{"t":"tree-bottom"},"102":{"t":"road-horizontal"},"113":{"t":"building-one-1"},"114":{"t":"building-one-3"},"115":{"t":"road-downy","b":{"c":"gray","d":[4,3,4,5]}},"116":{"t":"road-vertical"},"117":{"t":"road-vertical"},"118":{"t":"road-upty"},"129":{"t":"building-one-2"},"130":{"t":"building-one-4"},"131":{"t":"road-horizontal"},"132":{"t":"tree-top"},"133":{"t":"tree-bottom"},"134":{"t":"road-horizontal"},"145":{"t":"road-stop-up","m":"green"},"146":{"t":"road-vertical"},"147":{"t":"road-inter"},"148":{"t":"road-vertical"},"149":{"t":"road-stop-down","m":"green"},"150":{"t":"road-stop-right","m":"blue"},"163":{"t":"road-stop-right","m":"orange"}}, "initial": [2, 4, "#779ECB"]}');
-            initHierarchy();
-            if(localStorage['copihue-saveSpace'] != "undefined")
-                take(JSON.parse(localStorage['copihue-saveSpace']));
+        loadImages(function() {
+            $('#resume').removeClass('loading').text($('#resume').attr("data-ready"));
+        });
+
+        $('#resume').click(function() {
+            play({
+                data: {"dim": {"x": "14", "y": "9"}, "map": {"17":{"t":"road-stop-left","m":"green"},"19":{"t":"road-stop-left"},"21":{"t":"road-stop-left","m":"red"},"33":{"t":"road-horizontal"},"34":{"t":"tree-solo-1"},"35":{"t":"road-horizontal"},"36":{"t":"tree-solo-2"},"37":{"t":"road-horizontal"},"48":{"t":"road-stop-up","m":"orange"},"49":{"t":"road-inter"},"50":{"t":"road-vertical"},"51":{"t":"road-inter"},"52":{"t":"road-vertical"},"53":{"t":"road-corner-downleft"},"65":{"t":"road-horizontal"},"66":{"t":"tree-solo-2"},"67":{"t":"road-horizontal"},"68":{"t":"lake-top"},"69":{"t":"lake-bottom"},"81":{"t":"road-stop-right","m":"green"},"83":{"t":"road-horizontal"},"84":{"t":"road-stop-up","m":"red"},"85":{"t":"road-vertical"},"86":{"t":"road-corner-downright"},"99":{"t":"road-horizontal"},"100":{"t":"tree-top"},"101":{"t":"tree-bottom"},"102":{"t":"road-horizontal"},"113":{"t":"building-one-1"},"114":{"t":"building-one-3"},"115":{"t":"road-downy","b":{"c":"gray","d":[4,3,4,5]}},"116":{"t":"road-vertical"},"117":{"t":"road-vertical"},"118":{"t":"road-upty"},"129":{"t":"building-one-2"},"130":{"t":"building-one-4"},"131":{"t":"road-horizontal"},"132":{"t":"tree-top"},"133":{"t":"tree-bottom"},"134":{"t":"road-horizontal"},"145":{"t":"road-stop-up","m":"green"},"146":{"t":"road-vertical"},"147":{"t":"road-inter"},"148":{"t":"road-vertical"},"149":{"t":"road-stop-down","m":"green"},"150":{"t":"road-stop-right","m":"blue"},"163":{"t":"road-stop-right","m":"orange"}}, "initial": [2, 4, "#779ECB"]},
+                title: "DevMap",
+                author: "Shelo"
+            });
+        });
+
+        $('#show-levels').click(function(e) {
+            if($(this).hasClass('loading'))
+                return;
+
+            $('#levels-showcase').fadeIn();
+            e.stopPropagation();
+
+            if(loaded === false) {
+                loaded = true;
+                for(var i = 0; i < ids.length; i++) {
+                    var cont = $('<div id="level_' + ids[i] + '" data-width="500" data-height="330">');
+                    cont.attr("data-level", ids[i]);
+                    $('#levels-showcase').append(cont);
+                    cont.loadLevel(images);
+
+                    cont.click(function() {
+                        play($(this).data("level"));
+                    });
+                }
+            }
+        });
+
+        $('body').click(function(e) {
+            e.stopPropagation();
+            $('#levels-showcase').fadeOut();
+            $('#context').slideUp();
+        });
+
+        $(document).click(function() {
         });
     });
     </script>
@@ -30,7 +104,8 @@
 <div id="opacity"></div>
 <div id="landing-page">
     <h1>TruckScript</h1>
-    <div class="big-button" id="resume">Resume Game</div>
+    <div class="big-button loading" id="resume" data-ready="Resume game">Loading...</div>
+    <div class="big-button loading" id="show-levels" data-ready="Show levels">Loading...</div>
     <div class="big-button">Level Editor</div>
     <div class="big-button">Close session</div>
 </div>
@@ -52,6 +127,7 @@
         <div id="action-bar">
             <div id="save-button"></div>
             <div id="play-button"></div>
+            <div id="back-button"></div>
         </div>
     </div>
 
@@ -61,6 +137,9 @@
     </div>
 </div>
 
+<div id="levels-showcase">
+    <div class="back-cover"></div>
+</div>
 <div id="display-container"></div>
 </body>
 </html>

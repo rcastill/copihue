@@ -7,13 +7,14 @@
     <script src="src/util.js"></script>
     <script src="src/levelcase.js"></script>
     <script>
-        $(document).ready(function() {
-            loadImages();
-            $('#level_1').loadLevel(images, 1);
+    $(document).ready(function() {
+        loadImages(function() {
+            $('#level_1').loadLevel(images);
         });
+    });
     </script>
 </head>
 <body>
-<div id="level_1" data-level="1" data-width="500" data-height="400"></div>
+<div id="level_1" data-level="1" data-width="400" data-height="260"></div>
 </body>
 </html>

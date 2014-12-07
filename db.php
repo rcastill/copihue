@@ -129,5 +129,4 @@ if (isset($_POST)) {
 
 if ($conn != null)
     $conn->close();
-
 ?>

@@ -18,7 +18,7 @@
     to { right: 0; }
 }
 
-canvas {
+#game-canvas {
     position: absolute;
     height: 100%;
     padding: 0;
@@ -122,6 +122,20 @@ canvas {
 
 #save-button:hover {
     background-image: url("../img/save-button-hover.png");
+}
+
+#back-button {
+    position: absolute;
+    bottom: 52px;
+    width: 150px;
+    height: 50px;
+    background-image: url("../img/back-button.png");
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+#back-button:hover {
+    background-image: url("../img/back-button-hover.png");
 }
 
 .truck {

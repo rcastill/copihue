@@ -256,10 +256,6 @@ function showContextMenu(event) {
  * Hierarchy initializer.
  */
 function initHierarchy() {
-    $(document).click(function() {
-        $('#context').slideUp();
-    });
-
     $('#context').click(function(e) {
         e.stopPropagation();
     });
@@ -270,6 +266,8 @@ function initHierarchy() {
 
         $('#context').slideUp();
     });
+
+    $('#trucks').empty();
 
     addTruck(colors[0], true);
 
@@ -286,17 +284,17 @@ function initHierarchy() {
             $(this).toggleClass('selected');
         });
 
-    $('#plus-button').click(function() {
+    $('#plus-button').unbind().click(function() {
         var color = getUnusedColor();
         if(color != false)
             addTruck(color, false);
     });
 
-    $('#save-button').click(function() {
+    $('#save-button').unbind().click(function() {
         localStorage.setItem('copihue-saveSpace', JSON.stringify(getTrucksAndCommands()));
     });
 
-    $('#play-button').click(function() {
+    $('#play-button').unbind().click(function() {
         if(stop)
             start(getTrucksAndCommands());
         else
@@ -304,6 +302,18 @@ function initHierarchy() {
 
         $(this).removeClass('stop');
         if(!stop) $(this).addClass('stop');
+    });
+
+    $('#back-button').click(function() {
+        $('#game-page').fadeOut();
+        $('#hierarchy').removeClass('initialize');
+        stop = true;
+
+        $('#display-container > div').each(function() {
+            $(this).fadeOut();
+        });
+
+        closeCanvas();
     });
 }
 
