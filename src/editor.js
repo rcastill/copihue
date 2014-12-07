@@ -169,7 +169,7 @@ function updateBlockPosition() {
 
 
 function clear() {
-    editor.context.fillStyle = "#ffffff";
+    editor.context.fillStyle = "#836953";
     var width = editor.canvas.width;
     var height = editor.canvas.height;
     editor.context.clearRect(0, 0, width, height);
@@ -390,7 +390,10 @@ function loadImages() {
         "button-gray", "button-purple",
 
         // deathends
-        "deathend-gray", "deathend-purple"
+        "deathend-gray", "deathend-purple",
+
+        // buildings
+        "building-one-1", "building-one-2", "building-one-3", "building-one-4"
     ];
 
     for(var i = 0;i<imagesUrls.length;i++) {
@@ -409,6 +412,10 @@ function init() {
 
     canvas.width = data.dim.x * GRID_DIMENSION;
     canvas.height = data.dim.y * GRID_DIMENSION;
+
+    // Center canvas
+    $("#canvas").css("left", ((window.innerWidth - 300) / 2) - (canvas.width / 2))
+        .css("top", ((window.innerHeight / 2) - (canvas.height / 2)));
 
     editor = {
         canvas: canvas,
@@ -450,7 +457,7 @@ function init() {
 
 $(document).ready(function () {
     while (true) {
-        var dim = prompt("Insert map dimension. \ne.g. 16x10")
+        var dim = prompt("Insert map dimension. \ne.g. 16x9")
         if (dim != null) dim = dim.split("x");
 
         else continue;
