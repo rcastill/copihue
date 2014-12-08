@@ -248,7 +248,8 @@ function render() {
 function update() {
     var newTrucks = [];
 
-    for(var i = 0; i < trucks.length; i++) {
+    var length = trucks.length;
+    for(var i = 0; i < length; i++) {
         var truck = trucks[i];
 
         // update only if signal is off or the signal is his.
@@ -259,15 +260,14 @@ function update() {
             var onTile = matrix[parseInt(truck.x)][parseInt(truck.y)];
             if(truck.lastTile != onTile && onTile.hasButton())
                 matrix[parseInt(truck.x)][parseInt(truck.y)].toggleButton();
-
             truck.lastTile = onTile;
 
             // check if the truck spawned.
             if(truck.isSpawning() !== false) {
-                var index = truck.isSpawning();
-                var newTruck = new Truck(truck._x, truck._y, hierarchy[index]);
+                var newTruck = new Truck(truck._x, truck._y, hierarchy[truck.isSpawning()]);
                 newTruck.dir = truck.dir;
-                newTrucks.push(newTruck);
+                trucks.push(newTruck);
+                length++;
                 truck.finish();
             }
 
@@ -278,9 +278,6 @@ function update() {
             }
         }
     }
-
-    for(var j = 0; j < newTrucks.length; j++)
-        trucks.push(newTrucks[j]);
 
     var markCount = 0;
     for(var x = 0; x < levelWidth; x++) {

@@ -62,7 +62,7 @@
 
         $('#resume').click(function() {
             play({
-                data: JSON.parse('{"dim":{"x":"12","y":"7"},"map":{"17":{"t":"road-stop-left","m":"green"},"19":{"t":"road-stop-left"},"21":{"t":"road-stop-left","m":"red"},"33":{"t":"road-horizontal"},"34":{"t":"tree-solo-2"},"35":{"t":"road-horizontal"},"36":{"t":"tree-solo-2"},"37":{"t":"road-horizontal"},"48":{"t":"road-stop-up","m":"orange"},"49":{"t":"road-inter"},"50":{"t":"road-vertical"},"51":{"t":"road-inter"},"52":{"t":"road-vertical"},"53":{"t":"road-corner-downleft"},"65":{"t":"road-horizontal"},"66":{"t":"tree-solo-2"},"67":{"t":"road-horizontal"},"68":{"t":"lake-top"},"69":{"t":"lake-bottom"},"81":{"t":"road-stop-right","m":"green"},"83":{"t":"road-horizontal"},"84":{"t":"road-stop-up","m":"red"},"85":{"t":"road-vertical"},"86":{"t":"road-corner-downright"},"99":{"t":"road-horizontal"},"100":{"t":"tree-top"},"101":{"t":"tree-bottom"},"102":{"t":"road-horizontal"},"113":{"t":"building-one-1"},"114":{"t":"building-one-3"},"115":{"t":"road-downy","b":{"c":"gray","d":[3,2,3,4]}},"116":{"t":"road-vertical"},"117":{"t":"road-vertical"},"118":{"t":"road-upty"},"129":{"t":"building-one-2"},"130":{"t":"building-one-4"},"131":{"t":"road-horizontal"},"132":{"t":"tree-top"},"133":{"t":"tree-bottom"},"134":{"t":"road-horizontal"},"145":{"t":"road-stop-up","m":"green"},"146":{"t":"road-vertical"},"147":{"t":"road-inter"},"148":{"t":"road-vertical"},"149":{"t":"road-stop-down","m":"green"},"150":{"t":"road-stop-right","m":"blue"},"163":{"t":"road-stop-right","m":"orange"}},"initial":[1,3,"#779ECB"]}'),
+                data: JSON.parse('{"dim":{"x":"12","y":"7"},"map":{"6":{"t":"road-stop-left"},"19":{"t":"road-corner-upright"},"20":{"t":"road-corner-downright","m":"blue"},"22":{"t":"road-horizontal"},"32":{"t":"road-stop-up","m":"blue"},"33":{"t":"road-vertical"},"34":{"t":"road-vertical"},"35":{"t":"road-inter"},"36":{"t":"road-corner-downleft"},"38":{"t":"road-horizontal"},"51":{"t":"road-horizontal"},"54":{"t":"road-horizontal"},"66":{"t":"road-stop-up","m":"orange"},"67":{"t":"road-inter"},"68":{"t":"road-vertical"},"69":{"t":"road-vertical"},"70":{"t":"road-corner-downleft"},"83":{"t":"road-horizontal"},"96":{"t":"road-corner-upright","m":"blue"},"97":{"t":"road-corner-downright"},"99":{"t":"road-horizontal"},"112":{"t":"road-corner-upleft"},"113":{"t":"road-inter"},"114":{"t":"road-vertical"},"115":{"t":"road-upty"},"129":{"t":"road-horizontal"},"131":{"t":"road-stop-right","m":"orange"},"145":{"t":"road-horizontal"},"161":{"t":"road-stop-right","m":"blue"}},"initial":[0,6,"#C23B22"]}'),
                 title: "One of All",
                 author: "Shelo"
             });
@@ -97,6 +97,10 @@
             window.location = "editor.php";
         });
 
+        $('#close-session').click(function() {
+            // RODOLFO.
+        });
+
         $('body').click(function(e) {
             e.stopPropagation();
             $('#levels-showcase').fadeOut();
@@ -112,7 +116,7 @@
     <div class="big-button loading" id="resume" data-ready="Resume game">Loading...</div>
     <div class="big-button loading" id="show-levels" data-ready="Show levels">Loading...</div>
     <div class="big-button" id="level-editor">Level Editor</div>
-    <div class="big-button">Close session</div>
+    <div class="big-button" id="close-session">Close session</div>
 </div>
 
 <div id="game-page">
