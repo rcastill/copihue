@@ -67,6 +67,7 @@
 
 .no-transition {
     transition: none;
+    z-index: 9999;
 }
 
 .nav-command:hover {
@@ -136,6 +137,27 @@
 
 #back-button:hover {
     background-image: url("../img/back-button-hover.png");
+}
+
+#trucks {
+    overflow-y: scroll;
+}
+
+#trucks::-webkit-scrollbar {
+    width: 10px;
+}
+
+#trucks::-webkit-scrollbar-track {
+    background-color: #eaeaea;
+    border-left: 1px solid #ccc;
+}
+
+#trucks::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+}
+
+#trucks::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
 }
 
 .truck {

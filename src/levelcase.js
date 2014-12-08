@@ -23,8 +23,8 @@
     };
 
     $.drawOnCanvas = function(target, images, level, width, height) {
-        var levelHeight = level.dim.y;
-        var levelWidth  = level.dim.x;
+        var levelHeight = parseInt(level.dim.y) + 2;
+        var levelWidth  = parseInt(level.dim.x) + 2;
         var map         = level.map;
 
         var canvas  = document.createElement('canvas');
@@ -44,6 +44,9 @@
 
         for(var key in map) {
             var pos     = byteToPos(key);
+
+            pos.x += 1;
+            pos.y += 1;
 
             matrix[pos.x][pos.y].t = images[map[key].t];
             matrix[pos.x][pos.y].b = map[key].b;
@@ -80,8 +83,9 @@
         }
 
         for(var t = 0; t < level.initial.length; t+=3) {
-            context.drawImage(images["truck-" + colorNamesTable[level.initial[t+2]]], offsetLeft + level.initial[t] * tileSize,
-                offsetTop + level.initial[t + 1] * tileSize, tileSize, tileSize);
+            context.drawImage(images["truck-" + colorNamesTable[level.initial[t+2]]],
+                offsetLeft + (level.initial[t] + 1) * tileSize,
+                offsetTop + (level.initial[t + 1] + 1) * tileSize, tileSize, tileSize);
         }
 
         target.append(canvas);

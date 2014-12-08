@@ -28,9 +28,11 @@ var width;
 
 function initGame(levelData) {
     // save level data.
-    levelHeight = levelData.dim.y;
-    levelWidth  = levelData.dim.x;
+    levelHeight = parseInt(levelData.dim.y) + 2;
+    levelWidth  = parseInt(levelData.dim.x) + 2;
     initial     = levelData['initial'];
+
+    console.log(levelHeight);
 
     canvas = document.createElement('canvas');
     context = canvas.getContext('2d');
@@ -98,13 +100,16 @@ function loadMap(map) {
         var pos     = byteToPos(key);
         var tex     = map[key].t;
 
-        matrix[pos.x ][pos.y].texture = images[tex];
+        pos.x += 1;
+        pos.y += 1;
+
+        matrix[pos.x][pos.y].texture = images[tex];
 
         if(button != undefined) {
             var connections = [];
             for(var i = 0; i < button.d.length; i+=2)
-                connections.push(matrix[button.d[i]][button.d[i+1]]);
-            matrix[pos.x ][pos.y].setButton(button.c, connections);
+                connections.push(matrix[button.d[i] + 1][button.d[i+1] + 1]);
+            matrix[pos.x][pos.y].setButton(button.c, connections);
         }
 
         if(mark != undefined) {
@@ -327,7 +332,7 @@ function finish() {
 
     // add the initial trucks.
     for(var i = 0; i < initial.length; i += 3)
-        trucks.push(new Truck(initial[i], initial[i + 1], {
+        trucks.push(new Truck(initial[i] + 1, initial[i + 1] + 1, {
             color: initial[i + 2],
             commands: []
         }));
@@ -393,7 +398,7 @@ function debugMap() {
                 var firstSection = filename.split('-')[0];
 
                 if(firstSection != 'corner' && filename != "tile.png") {
-                    var index = posToByte(x - 1, y - 1);
+                    var index = posToByte(x, y);
                     console.log(x, y, index);
 
                     map[index] = {

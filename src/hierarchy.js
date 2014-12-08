@@ -267,7 +267,13 @@ function initHierarchy() {
         $('#context').slideUp();
     });
 
-    $('#trucks').empty();
+    // get trucks list height.
+    var trucksHeight = window.innerHeight;
+    $('#hierarchy > h1').each(function() {
+        trucksHeight -= $(this).outerHeight();
+    });
+    trucksHeight -= $('#play-button').outerHeight() + $('#nav-commands').outerHeight() + $('#plus-button').outerHeight() + 10;
+    $('#trucks').empty().height(trucksHeight);
 
     addTruck(colors[0], true);
 
