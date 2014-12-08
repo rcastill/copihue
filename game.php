@@ -14,15 +14,26 @@
 
     <?php
         session_start();
-
         if (!isset($_SESSION["user_id"]))
             header("location: index.html");
+        else {
+            include "connect.php";
+            $conn = connect();
+            $user_id = $_SESSION['user_id'];
+            $query   = "SELECT level_id, username FROM user WHERE user_id='$user_id'";
+            $res     = $conn->query($query);
+            $data    = $res->fetch_assoc();
+            echo "<script>var userData = " . json_encode($data) . ";</script>";
+            $conn->close();
+        }
     ?>
 
     <script>
     var SAVE_BUTTON = false;
-    var ids;
+
+    var currentLevelData;
     var loaded = false;
+    var ids;
 
     $.ajax({
         dataType: "json",
@@ -31,6 +42,19 @@
         success: function(data) {
             ids = data;
             $('#show-levels').removeClass('loading').text($('#show-levels').attr("data-ready"));
+        },
+
+        error: function() {
+            console.log("Sorry!, ajax error :(");
+        }
+    });
+
+    $.ajax({
+        dataType: "json",
+        url: "http://104.131.173.250/koding/glevel.php?id=" + userData.level_id,
+        type: 'GET',
+        success: function(data) {
+            currentLevelData = data;
         },
 
         error: function() {
@@ -64,15 +88,12 @@
         $(document).disableSelection();
 
         loadImages(function() {
-            $('#resume').removeClass('loading').text($('#resume').attr("data-ready"));
+            if(currentLevelData != undefined)
+                $('#resume').removeClass('loading').text($('#resume').attr("data-ready"));
         });
 
         $('#resume').click(function() {
-            play({
-                data: JSON.parse('{"dim":{"x":"12","y":"7"},"map":{"6":{"t":"road-stop-left"},"19":{"t":"road-corner-upright"},"20":{"t":"road-corner-downright","m":"blue"},"22":{"t":"road-horizontal"},"32":{"t":"road-stop-up","m":"blue"},"33":{"t":"road-vertical"},"34":{"t":"road-vertical"},"35":{"t":"road-inter"},"36":{"t":"road-corner-downleft"},"38":{"t":"road-horizontal"},"51":{"t":"road-horizontal"},"54":{"t":"road-horizontal"},"66":{"t":"road-stop-up","m":"orange"},"67":{"t":"road-inter"},"68":{"t":"road-vertical"},"69":{"t":"road-vertical"},"70":{"t":"road-corner-downleft"},"83":{"t":"road-horizontal"},"96":{"t":"road-corner-upright","m":"blue"},"97":{"t":"road-corner-downright"},"99":{"t":"road-horizontal"},"112":{"t":"road-corner-upleft"},"113":{"t":"road-inter"},"114":{"t":"road-vertical"},"115":{"t":"road-upty"},"129":{"t":"road-horizontal"},"131":{"t":"road-stop-right","m":"orange"},"145":{"t":"road-horizontal"},"161":{"t":"road-stop-right","m":"blue"}},"initial":[0,6,"#C23B22"]}'),
-                title: "One of All",
-                author: "Shelo"
-            });
+            play(currentLevelData);
         });
 
         $('#show-levels').click(function(e) {
