@@ -144,7 +144,7 @@
         });
 
         $('#level-editor').click(function() {
-            window.location = "editor.html";
+            window.location = "editor.php";
         });
 
         $('#close-session').click(function() {
