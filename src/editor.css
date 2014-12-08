@@ -111,4 +111,43 @@ canvas {
     float: right;
     padding: 3px 6px 3px 6px;
     margin: -3px;
+    cursor: pointer;
+}
+
+#form-level-data {
+    display: none;
+    background-color: #333;
+    margin-left: -175px;
+    position: absolute;
+    padding: 25px;
+    width: 300px;
+    left: 50%;
+    border-radius: 10px;
+    top: 300px;
+}
+
+#form-level-data input {
+    width: 280px;
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+    border: 0;
+}
+
+#form-level-data input[type=text]:first-child {
+    border-radius: 5px 5px 0 0;
+}
+
+#form-level-data input[type=submit] {
+    width: 301px;
+    border-radius: 0 0 5px 5px;
+    background-color: #111;
+    color: #FFF;
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+#form-level-data input[type=submit]:hover {
+    background-color: #c40114;
 }

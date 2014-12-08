@@ -188,8 +188,6 @@ function mainloop() {
 }
 
 function handleKeyDown(event) {
-    console.log(event.keyCode);
-
     if (event.keyCode == 71) // g
         shouldGrid = !shouldGrid;
 
@@ -464,6 +462,35 @@ function init() {
     });
 }
 
+function upload() {
+    var mapData = {
+        'data': JSON.stringify(data),
+        'difficulty': $("#upload-difficulty").val(),
+        'title': $("#upload-title").val()
+    };
+
+    $.ajax({
+        url: 'upload.php',
+        type: 'POST',
+        dataType: 'text',
+        data: mapData,
+
+        success: function (data) {
+            if (isNaN(data)) alert(data);
+
+            // register
+            else if (data == 1)
+                alert("Uploaded!");
+
+            $('#form-level-data').fadeOut();
+        },
+
+        error: function (data) {
+            alert("Error!");
+        }
+    });
+}
+
 $(document).ready(function () {
     while (true) {
         var dim = prompt("Insert map dimension. \ne.g. 16x9");
@@ -486,30 +513,21 @@ $(document).ready(function () {
     }
     init();
 
-    $("#upload").click(function () {
-        var mapData = {
-            'data': JSON.stringify(data),
-            'difficulty': $("#upload-difficulty").val(),
-            'title': $("#upload-title").val()
-        };
+    $("#upload").click(function(e) {
+        $('#form-level-data').fadeIn();
+        e.stopPropagation();
+    });
 
-        $.ajax({
-            url: 'upload.php',
-            type: 'POST',
-            dataType: 'text',
-            data: mapData,
-
-            success: function (data) {
-                if (isNaN(data)) alert(data);
-
-                // register
-                else if (data == 1)
-                    alert("Uploaded!");
-            },
-
-            error: function (data) {
-                alert("Error!");
-            }
+    $('#form-level-data')
+        .click(function(e) {
+            e.stopPropagation();
+        })
+        .submit(function(e) {
+            upload();
+            return false;
         });
+
+    $(document).click(function() {
+        $('#form-level-data').fadeOut();
     });
 });
