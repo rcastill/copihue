@@ -179,7 +179,7 @@ function clear() {
 function mainloop() {
     clear();
     updateBlockPosition();
-    inspectorTitle("Inspector (" + bpos.x + ", " + bpos.y + ")");
+    inspectorTitle("Inspector (" + bpos.x / GRID_DIMENSION + ", " + bpos.y / GRID_DIMENSION + ")");
     grid("#333");
     renderMap();
     drawPositionSupport();
@@ -359,9 +359,9 @@ function initData() {
 
 function setSelected(key) {
     if (selected != null)
-        $("#" + selected).css("border", "0");
+        $("#" + selected).removeClass("selected");
 
-    $("#" + key).css("border", "2px dotted #004DB4");
+    $("#" + key).addClass("selected");
     selected = key;
 }
 
@@ -430,18 +430,28 @@ function init() {
      Load images to inpector
      */
     $(window).load(function () {
-        scaleImages(0.3);
-
         var key;
         for (key in images) {
             if (key.match("^deathend-*") != null) continue;
-            $("#list").append('<button onclick="setSelected(\'' + key + '\');" id="' + key
-            + '" class="asset-button">' + images[key].outerHTML + "</button>");
+
+            var image = $(images[key]);
+            image.addClass("asset-button");
+            image.attr('id', key);
+            $("#list").append(image);
+            image.data('key', key);
+
+            image.click(function() {
+                setSelected($(this).data('key'));
+            });
         }
 
         $("#editor").fadeIn(1000);
-        $("#inspector").animate({width:"toggle"}, 400);
         $("#title").slideDown(600);
+        $("#inspector-bar").addClass("inspector-animate");
+
+        var inspHeight = window.innerHeight;
+        inspHeight -= $('#title').outerHeight();
+        $('#inspector').height(inspHeight - 60);
 
         /*
          Events
@@ -456,9 +466,8 @@ function init() {
 
 $(document).ready(function () {
     while (true) {
-        var dim = prompt("Insert map dimension. \ne.g. 16x9")
+        var dim = prompt("Insert map dimension. \ne.g. 16x9");
         if (dim != null) dim = dim.split("x");
-
         else continue;
 
         if (dim.length != 2 || (isNaN(dim[0]) || isNaN([1]))) {
@@ -475,6 +484,5 @@ $(document).ready(function () {
         else
             alert("Dimension parameters must be greater or equal than 4 and less or equal to 20");
     }
-
     init();
 });

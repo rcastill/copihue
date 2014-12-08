@@ -1,6 +1,7 @@
 body {
     padding-right: 0;
     background-color: #836953;
+    overflow: hidden;
 }
 
 canvas {
@@ -10,23 +11,59 @@ canvas {
     box-shadow: 0 0 20px #333;
 }
 
+@-webkit-keyframes inspector-entry {
+    from {
+        right: -300px
+    }
+
+    to {
+        right: 0;
+    }
+}
+
+.inspector-animate {
+    -webkit-animation: inspector-entry 0.5s;
+    -moz-animation: inspector-entry 0.5s;
+    -o-animation: inspector-entry 0.5s;
+    animation: inspector-entry 0.5s;
+    right: 0 !important;
+}
+
 .inspector {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 100%;
     background-color: #333;
+    position: absolute;
+    height: 100%;
+    width: 300px;
+    right: -300px;
+    top: 0;
 }
 
 .inspector-list {
-    position: absolute;
     margin-top: 0;
+    position: absolute;
+    padding: 40px 20px 20px 0;
+    color: white;
     width: 260px;
     right: 0;
     top: 0;
-    padding: 80px 20px 20px 20px;
-    color: white;
+    overflow-y: scroll;
+}
+
+.inspector-list::-webkit-scrollbar {
+    width: 15px;
+}
+
+.inspector-list::-webkit-scrollbar-track {
+    background-color: #eaeaea;
+    border-left: 1px solid #ccc;
+}
+
+.inspector-list::-webkit-scrollbar-thumb {
+    background-color: #444;
+}
+
+.inspector-list::-webkit-scrollbar-thumb:hover {
+    background-color: #666;
 }
 
 .inspector-title {
@@ -39,6 +76,7 @@ canvas {
     background-color: #232323;
     color: #E7E7E7;
     font-family: 'Roboto Condensed', sans-serif;
+    z-index: 9999;
 }
 
 .list-container {
@@ -47,12 +85,21 @@ canvas {
 }
 
 .asset-button {
-    margin: 3px;
-    border: 0;
     background-color: transparent;
     outline: none;
+    margin: 3px;
+    border: 0;
+    padding: 0;
+    width: 66px;
+    height: 66px;
 }
 
 .asset-button:hover {
-    border: 2px solid #004DB4;
+    margin: 1px;
+    border: 2px #FFF solid;
+}
+
+.selected {
+    margin: 1px;
+    border: 2px solid #c40114;
 }

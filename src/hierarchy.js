@@ -255,7 +255,7 @@ function showContextMenu(event) {
 /*
  * Hierarchy initializer.
  */
-function initHierarchy() {
+function initHierarchy(initial) {
     $('#context').click(function(e) {
         e.stopPropagation();
     });
@@ -275,7 +275,8 @@ function initHierarchy() {
     trucksHeight -= $('#play-button').outerHeight() + $('#nav-commands').outerHeight() + $('#plus-button').outerHeight() + 10;
     $('#trucks').empty().height(trucksHeight);
 
-    addTruck(colors[0], true);
+    for(var i = 0; i < initial.length; i+=3)
+        addTruck(initial[i + 2], true);
 
     $('.nav-command')
         .draggable(navCommandDrag)
@@ -296,9 +297,14 @@ function initHierarchy() {
             addTruck(color, false);
     });
 
-    $('#save-button').unbind().click(function() {
-        localStorage.setItem('copihue-saveSpace', JSON.stringify(getTrucksAndCommands()));
-    });
+    if(SAVE_BUTTON)
+        $('#save-button').unbind().click(function() {
+            localStorage.setItem('copihue-saveSpace', JSON.stringify(getTrucksAndCommands()));
+        });
+    else {
+        $('#back-button').css('bottom', '20px');
+        $('#save-button').remove();
+    }
 
     $('#play-button').unbind().click(function() {
         if(stop)

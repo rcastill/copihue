@@ -13,6 +13,7 @@
     <script src="src/levelcase.js"></script>
 
     <script>
+    var SAVE_BUTTON = false;
     var ids;
     var loaded = false;
 
@@ -39,7 +40,7 @@
 
         // initialize components.
         initGame(data.data);
-        initHierarchy();
+        initHierarchy(data.data.initial);
 
         // load saved hierarchy.
         if(localStorage['copihue-saveSpace'] != "undefined")
