@@ -35,7 +35,9 @@ if (!isset($_SESSION["user_id"]))
 <form id="form-level-data">
     <input type="text" id="upload-difficulty" placeholder="level title" required>
     <input type="number" id="upload-title" placeholder="difficulty" required>
-    <input type="submit" value="Upload!">
+    <input type="submit" id="upload-submit" value="Upload!">
 </form>
+
+<div id="back-button"></div>
 </body>
 </html>

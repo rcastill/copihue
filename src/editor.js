@@ -524,8 +524,13 @@ $(document).ready(function () {
         })
         .submit(function(e) {
             upload();
+//          $('#upload-submit').val("Uploading...").disable();
             return false;
         });
+
+    $('#back-button').click(function() {
+        window.location = "game.php";
+    });
 
     $(document).click(function() {
         $('#form-level-data').fadeOut();
