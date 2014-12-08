@@ -123,6 +123,23 @@ a {
     box-shadow: 0 0 20px #000;
 }
 
+#levels-showcase::-webkit-scrollbar {
+    height: 15px;
+}
+
+#levels-showcase::-webkit-scrollbar-track {
+    background-color: #eaeaea;
+    border-left: 1px solid #ccc;
+}
+
+#levels-showcase::-webkit-scrollbar-thumb {
+    background-color: #333;
+}
+
+#levels-showcase::-webkit-scrollbar-thumb:hover {
+    background-color: #666;
+}
+
 #levels-showcase .back-cover {
     position: absolute;
     width: 100%;
