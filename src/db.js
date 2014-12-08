@@ -14,8 +14,14 @@ function registerViaFacebook() {
                     },
 
                     success: function (data) {
-                        if (data == 1) alert("success!");
-                        else alert(data);
+                        if (isNaN(data)) alert(data);
+
+                        else if (data == 0)
+                            alert("registred!");
+
+                        else if (data == 1)
+                            window.location.replace("game.php");
+
                     },
 
                     error: function (data) {
@@ -44,13 +50,11 @@ $(document).ready(function () {
         };
 
         var user = $("#user-input");
-        var register = false;
 
         if (user.is(":visible")) {
             // Register
             formData['req'] = 'register';
             formData['username'] = user.val();
-            register = true;
         } else {
             formData['req'] = 'login';
         }
@@ -62,13 +66,15 @@ $(document).ready(function () {
             data: formData,
 
             success: function (data) {
-                if (register) {
-                    if (data == 1) console.log("Success!");
-                    else alert(data);
-                } else {
-                    if (isNaN(data)) console.log(data);
-                    else alert("level_id " + data);
-                }
+                if (isNaN(data)) alert(data);
+
+                // register
+                else if (data == 0)
+                    alert("Success");
+
+                // login
+                else if (data == 1)
+                    window.location.replace("game.php");
             },
 
             error: function (data) {

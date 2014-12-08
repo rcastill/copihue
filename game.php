@@ -12,6 +12,13 @@
     <script src="src/canvas.js"></script>
     <script src="src/levelcase.js"></script>
 
+    <?php
+        session_start();
+
+        if (!isset($_SESSION["user_id"]))
+            header("location: index.html");
+    ?>
+
     <script>
     var SAVE_BUTTON = false;
     var ids;
@@ -94,11 +101,11 @@
         });
 
         $('#level-editor').click(function() {
-            window.location = "editor.php";
+            window.location = "editor.html";
         });
 
         $('#close-session').click(function() {
-            // RODOLFO.
+            window.location.replace("logout.php");
         });
 
         $('body').click(function(e) {

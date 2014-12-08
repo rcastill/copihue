@@ -1,5 +1,4 @@
 <?php
-
 function connect() {
     $server = "localhost";
     $username = "root";
@@ -37,10 +36,10 @@ function register($conn=null) {
         $passwd = md5($_POST["password"]);
     }
 
-    $query = "INSERT INTO user (email, passwd, username, level_id, via) VALUES ('$email', '$passwd', '$username', -1, '$via')";
+    $query = "INSERT INTO user (email, passwd, username, level_id, via) VALUES ('$email', '$passwd', '$username', 5, '$via')";
 
     if ($conn->query($query))
-        echo "1";
+        echo 0;
     else
         echo $conn->error;
 
@@ -61,7 +60,7 @@ function login($conn=null) {
      */
     if ($via == "facebook") {
         $email = $_POST["email"];
-        $query = "SELECT level_id, via FROM user WHERE email='$email'";
+        $query = "SELECT user_id, via FROM user WHERE email='$email'";
         $result = $conn->query($query);
 
         if ($result->num_rows > 0) {
@@ -69,13 +68,16 @@ function login($conn=null) {
             $row = $result->fetch_assoc();
 
             if ($row["via"] != "facebook") {
-                echo "Not a facebook account";
+                echo "Not a facebook email";
                 return $conn;
             }
 
-            echo "LEVEL_ID ";
-            $level_id = $row["level_id"];
-            echo $level_id;
+            $user_id = $row["user_id"];
+
+            session_start();
+            $_SESSION["user_id"] = $user_id;
+
+            echo 1;
         } else {
             // Register
             register($conn);
@@ -86,27 +88,37 @@ function login($conn=null) {
          */
         $email = $_POST["email"];
         $passwd = $_POST["password"];
-        $query = "SELECT passwd FROM user WHERE email='$email'";
+        $query = "SELECT passwd, via FROM user WHERE email='$email'";
 
         $result = $conn->query($query);
 
         if ($result->num_rows > 0) {
+            $via = $result->fetch_assoc()["via"];
             $db_pwd = $result->fetch_assoc()["passwd"];
+
+            if ($via != "email") {
+                echo "Not registered by email";
+                return $conn;
+            }
 
             /*
              * Authenticate
              */
             if (md5($passwd) == $db_pwd) {
                 // user exists
-                $id_query = "SELECT level_id FROM user WHERE email='$email'";
+                $id_query = "SELECT user_id FROM user WHERE email='$email'";
                 $id_result = $conn->query($id_query);
-                $level_id = $id_result->fetch_assoc()["level_id"];
-                echo "level_id->".$level_id;
+                $user_id = $id_result->fetch_assoc()["user_id"];
+
+                session_start();
+                $_SESSION["user_id"] = $user_id;
+                echo 1;
+
             } else {
-                echo "Error: Wrong password!";
+                echo "Wrong Password";
             }
         } else {
-            echo "Email not found";
+            echo "Wrong email";
         }
     }
 
