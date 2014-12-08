@@ -151,3 +151,18 @@ canvas {
 #form-level-data input[type=submit]:hover {
     background-color: #c40114;
 }
+
+#back-button {
+    position: absolute;
+    bottom: 10px;
+    width: 150px;
+    height: 50px;
+    background-image: url("../img/back-button.png");
+    cursor: pointer;
+    transition: 0.5s;
+    left: 0;
+}
+
+#back-button:hover {
+    background-image: url("../img/back-button-hover.png");
+}
