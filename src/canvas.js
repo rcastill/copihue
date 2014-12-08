@@ -32,8 +32,6 @@ function initGame(levelData) {
     levelWidth  = parseInt(levelData.dim.x) + 2;
     initial     = levelData['initial'];
 
-    console.log(levelHeight);
-
     canvas = document.createElement('canvas');
     context = canvas.getContext('2d');
 
@@ -225,7 +223,7 @@ function render() {
         if(truck.dir == 0)
             context.drawImage(images['shadow-0'], -9, 4, 78, 35);
         else if(truck.dir == 1)
-            context.drawImage(images['shadow-1'], 2, -76, 50, 68);
+            context.drawImage(images['shadow-1'], 7, -76, 50, 68);
         else if(truck.dir == 2)
             context.drawImage(images['shadow-2'], -75, -75, 68, 44);
         else if(truck.dir == 3)
@@ -246,10 +244,9 @@ function render() {
 }
 
 function update() {
-    var newTrucks = [];
-
+    var i = 0;
     var length = trucks.length;
-    for(var i = 0; i < length; i++) {
+    while(i < length) {
         var truck = trucks[i];
 
         // update only if signal is off or the signal is his.
@@ -277,19 +274,9 @@ function update() {
                 truck.finish();
             }
         }
-    }
 
-    var markCount = 0;
-    for(var x = 0; x < levelWidth; x++) {
-        for(var y = 0; y < levelHeight; y++) {
-            var tile = matrix[x][y];
-            if(tile.marked !== false && tile.hasUpperColor() && tile.marked == tile.upperColor)
-                markCount++;
-        }
+        i++;
     }
-
-    if(totalMarks == markCount)
-        win();
 
     // update particles.
     for(var k = particles.length - 1; k > -1; k--) {
@@ -356,7 +343,7 @@ function start(_hierarchy) {
 }
 
 function lose() {
-    if(lost) return;
+    if(won || lost) return;
 
     displayText([
         "Try again!", 80
@@ -472,6 +459,20 @@ Tile.prototype.isStreet = function() {
 
 Tile.prototype.mark = function(color) {
     this.marked = color;
+
+    var markCount = 0;
+    for(var x = 0; x < levelWidth; x++) {
+        for(var y = 0; y < levelHeight; y++) {
+            var tile = matrix[x][y];
+            if(tile.marked !== false && tile.hasUpperColor() && tile.marked == tile.upperColor)
+                markCount++;
+        }
+    }
+
+    if(totalMarks == markCount)
+        win();
+
+    console.log(1);
 };
 
 Tile.prototype.unMark = function() {
@@ -491,7 +492,7 @@ function Truck(x, y, base) {
     this.signalTime = 0;
     this.smokeTimer = 0;
     this.lastTile   = undefined;
-    this.head       = -1;
+    this.head       = 0;
     this.dir        = 0;
     this._x         = x;
     this._y         = y;
@@ -551,7 +552,6 @@ Truck.prototype.update = function() {
     }
 
     if(!matrix[this._x][this._y].isStreet()) {
-        this.finish();
         lose();
     }
 
@@ -623,6 +623,10 @@ Truck.prototype.isSpawning = function() {
 
 Truck.prototype.hasSignal = function() {
     return this.performing == 'signal';
+};
+
+Truck.prototype.hasMarked = function() {
+    return this.performing == 'mark';
 };
 
 /*
