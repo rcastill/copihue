@@ -93,8 +93,9 @@ function login($conn=null) {
         $result = $conn->query($query);
 
         if ($result->num_rows > 0) {
-            $via = $result->fetch_assoc()["via"];
-            $db_pwd = $result->fetch_assoc()["passwd"];
+            $fetch = $result->fetch_assoc();
+            $via = $fetch["via"];
+            $db_pwd = $fetch["passwd"];
 
             if ($via != "email") {
                 echo "Not registered by email";
