@@ -32,6 +32,7 @@
     var SAVE_BUTTON = false;
 
     var currentLevelData;
+    var imagesLoaded = false;
     var loaded = false;
     var ids;
 
@@ -41,7 +42,8 @@
         type: 'GET',
         success: function(data) {
             ids = data;
-            $('#show-levels').removeClass('loading').text($('#show-levels').attr("data-ready"));
+            if(imagesLoaded)
+                $('#show-levels').removeClass('loading').text($('#show-levels').attr("data-ready"));
         },
 
         error: function() {
@@ -55,6 +57,8 @@
         type: 'GET',
         success: function(data) {
             currentLevelData = data;
+            if(imagesLoaded === true)
+                $('#resume').removeClass('loading').text($('#resume').attr("data-ready"));
         },
 
         error: function() {
@@ -63,6 +67,19 @@
     });
 
     function play(data) {
+        $.ajax({
+            dataType: "json",
+            url: "http://104.131.173.250/koding/set_level.php?id=" + data.id,
+            type: 'GET',
+            success: function(data) {
+                console.log("USER LEVEL UPDATED");
+            },
+
+            error: function() {
+                console.log("Sorry!, ajax error :(");
+            }
+        });
+
         if($('#resume').hasClass('loading'))
             return;
 
@@ -90,6 +107,11 @@
         loadImages(function() {
             if(currentLevelData != undefined)
                 $('#resume').removeClass('loading').text($('#resume').attr("data-ready"));
+
+            if(ids != undefined)
+                $('#show-levels').removeClass('loading').text($('#show-levels').attr("data-ready"));
+
+            imagesLoaded = true;
         });
 
         $('#resume').click(function() {
@@ -178,5 +200,6 @@
     <div class="back-cover"></div>
 </div>
 <div id="display-container"></div>
+<img src="img/back-button-hover.png" style="display: none;" />
 </body>
 </html>

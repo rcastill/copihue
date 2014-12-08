@@ -359,8 +359,8 @@ function win() {
 
     displayText([
         "You won!", 80,
-        "Congratulations", 40
-    ], 2000, function() {
+        "Congratulations. Please go back and try another level :)", 40
+    ], 3000, function() {
         $('#play-button').trigger('click');
     });
 
