@@ -66,8 +66,8 @@
                           tileSize, tileSize);
 
                     for(var i = 0; i < tile.b.d.length; i+=2) {
-                        deathEnds.push(tile.b.d[i]);
-                        deathEnds.push(tile.b.d[i + 1]);
+                        deathEnds.push(tile.b.d[i] + 1);
+                        deathEnds.push(tile.b.d[i + 1] + 1);
                         deathEnds.push(tile.b.c);
                     }
 
