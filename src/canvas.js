@@ -5,7 +5,6 @@ var SMOKE_SIZE      = 20;
 
 var particles   = [];
 var buttons     = {};
-var images      = {};
 var signal      = false;
 var timer       = 0;
 var stop        = true;
@@ -24,27 +23,10 @@ var canvas;
 var height;
 var matrix;
 var trucks;
+var daemon;
 var width;
 
-var colorNamesTable = {
-    '#779ECB': 'blue',
-    '#C23B22': 'red',
-    '#77DD77': 'green',
-    '#836953': 'brown',
-    '#FFB347': 'orange'
-};
-
-var colorCodesTable = {
-    'blue': '#779ECB',
-    'red': '#C23B22',
-    'green': '#77DD77',
-    'brown': '#836953',
-    'orange': '#FFB347'
-};
-
-function initGame(jsonString) {
-    levelData = JSON.parse(jsonString);
-
+function initGame(levelData) {
     // save level data.
     levelHeight = levelData.dim.y;
     levelWidth  = levelData.dim.x;
@@ -52,6 +34,8 @@ function initGame(jsonString) {
 
     canvas = document.createElement('canvas');
     context = canvas.getContext('2d');
+
+    canvas.id = "game-canvas";
 
     width = window.innerWidth - 300;
     height = window.innerHeight;
@@ -62,22 +46,19 @@ function initGame(jsonString) {
     viewOffsetLeft = (width - levelWidth * TILE_SIZE) / 2;
     viewOffsetTop  = (height - levelHeight * TILE_SIZE) / 2;
 
-    displayText([
-        "TruckScript", 80,
-        "Welcome!", 40,
-    ], 2000, function() {
-        displayText([
-            "DevMap Level", 80,
-            "Author: Shelo", 30
-        ], 3000);
-    });
-
-    loadImages();
+    totalMarks  = 0;
+    particles   = [];
+    buttons     = {};
+    daemon      = true;
+    signal      = false;
+    timer       = 0;
+    stop        = true;
+    lost        = false;
+    won         = false;
 
     genMatrix();
     loadMap(levelData['map']);
 
-    totalMarks = 0;
     // obtains every mark and counts then.
     // sets every connections needed.
     for(var x = 0; x < levelWidth; x++) {
@@ -106,38 +87,6 @@ function initGame(jsonString) {
 
     $('#container').append(canvas);
 
-    /*
-    UNCOMMENT TO GET JSON MAP DATA FROM GAME.
-    var map = {};
-    for(var x = 0; x < levelWidth; x++) {
-        for(var y = 0; y < levelHeight; y++) {
-            if(matrix[x][y]) {
-                var sections = matrix[x][y].texture.src.split('/');
-                var filename = sections[sections.length - 1];
-                var firstSection = filename.split('-')[0];
-
-                if(firstSection != 'corner' && filename != "tile.png") {
-                    var index = posToByte(x, y);
-                    map[index] = {
-                        t: filename.replace(".png", "")
-                    };
-
-                    if(matrix[x][y].hasButton())
-                        map[index].b = {
-                            "c": matrix[x][y].button,
-                            "d": getConnectionArray(matrix[x][y].connections)
-                        };
-
-                    if(matrix[x][y].hasUpperColor())
-                        map[index].m = matrix[x][y].upperColor;
-                }
-            }
-        }
-    }
-
-    console.log(JSON.stringify(map));
-    */
-
     finish();
     mainLoop();
 }
@@ -153,9 +102,8 @@ function loadMap(map) {
 
         if(button != undefined) {
             var connections = [];
-            for(var i = 0; i < button.d.length; i+=2) {
+            for(var i = 0; i < button.d.length; i+=2)
                 connections.push(matrix[button.d[i]][button.d[i+1]]);
-            }
             matrix[pos.x ][pos.y].setButton(button.c, connections);
         }
 
@@ -181,45 +129,6 @@ function findTilePos(tile) {
             if(matrix[x][y] == tile)
                 return {x: x, y: y};
         }
-    }
-}
-
-function loadImages() {
-    var imagesUrls = [
-        // ground tiles.
-        'corner-1', 'corner-2', 'corner-3', 'corner-4', 'tile',
-
-        // trucks.
-        'truck-blue', 'truck-red', 'truck-green', 'truck-brown', 'truck-orange',
-
-        // trees.
-        'tree-top', 'tree-vertical-middle', 'tree-bottom', 'tree-solo-1', 'tree-solo-2', 'tree-right', 'tree-left',
-        'tree-horizontal-middle',
-
-        // decoration.
-        'pit', 'lake-top', 'lake-bottom',
-        'building-one-1', 'building-one-2', 'building-one-3', 'building-one-4',
-
-        // marks.
-        'mark-blue', 'mark-red', 'mark-orange', 'mark-brown', 'mark-green',
-        'mark-blue-marked', 'mark-red-marked', 'mark-green-marked', 'mark-brown-marked', 'mark-orange-marked',
-
-        // roads.
-        'road-vertical', 'road-horizontal', 'road-inter', 'road-lefty', 'road-righty', 'road-downy', 'road-upty',
-        'road-corner-downleft', 'road-corner-downright', 'road-corner-upright', 'road-corner-upleft', 'road-stop-up',
-        'road-stop-down', 'road-stop-right', 'road-stop-left',
-
-        // truck add-ons.
-        'signal-truck', 'shadow-0', 'shadow-1', 'shadow-2', 'shadow-3', 'smoke',
-
-        // buttons and deathends.
-        'button-gray', 'deathend-gray', 'deathend-gray-pass',
-        'button-purple', 'deathend-purple', 'deathend-purple-pass',
-    ];
-
-    for(var i = 0;i<imagesUrls.length;i++) {
-        images[imagesUrls[i]] = new Image();
-        images[imagesUrls[i]].src = "img/" + imagesUrls[i] + ".png";
     }
 }
 
@@ -391,7 +300,9 @@ function update() {
 }
 
 function mainLoop() {
-    requestAnimationFrame(mainLoop);
+    if(daemon)
+        requestAnimationFrame(mainLoop);
+
     if(!stop) update();
     else {
         TILE_SIZE += Math.sin(timer / 20) * 0.025;
@@ -465,6 +376,44 @@ function win() {
     });
 
     won = true;
+}
+
+function closeCanvas() {
+    finish();
+    daemon = false;
+}
+
+function debugMap() {
+    var map = {};
+    for(var x = 0; x < levelWidth; x++) {
+        for(var y = 0; y < levelHeight; y++) {
+            if(matrix[x][y]) {
+                var sections = matrix[x][y].texture.src.split('/');
+                var filename = sections[sections.length - 1];
+                var firstSection = filename.split('-')[0];
+
+                if(firstSection != 'corner' && filename != "tile.png") {
+                    var index = posToByte(x - 1, y - 1);
+                    console.log(x, y, index);
+
+                    map[index] = {
+                        t: filename.replace(".png", "")
+                    };
+
+                    if(matrix[x][y].hasButton())
+                        map[index].b = {
+                            "c": matrix[x][y].button,
+                            "d": getConnectionArray(matrix[x][y].connections)
+                        };
+
+                    if(matrix[x][y].hasUpperColor())
+                        map[index].m = matrix[x][y].upperColor;
+                }
+            }
+        }
+    }
+
+    console.log(JSON.stringify(map));
 }
 
 /*
