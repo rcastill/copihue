@@ -152,14 +152,14 @@ function grid(color) {
     }
 }
 
-function inspectorTitle(title) {
-    var div = $("#title");
+function inspectorPos(pos) {
+    var div = $("#pos");
 
-    // Returns current title
-    if (title == undefined) return div.html();
+    // Returns current pos
+    if (pos == undefined) return div.html();
 
-    // Set new title
-    div.html(title);
+    // Set new pos
+    div.html(pos);
 }
 
 function updateBlockPosition() {
@@ -179,7 +179,7 @@ function clear() {
 function mainloop() {
     clear();
     updateBlockPosition();
-    inspectorTitle("Inspector (" + bpos.x / GRID_DIMENSION + ", " + bpos.y / GRID_DIMENSION + ")");
+    inspectorPos("(" + bpos.x / GRID_DIMENSION + ", " + bpos.y / GRID_DIMENSION + ")");
     grid("#333");
     renderMap();
     drawPositionSupport();
@@ -485,4 +485,30 @@ $(document).ready(function () {
             alert("Dimension parameters must be greater or equal than 4 and less or equal to 20");
     }
     init();
+
+    $("#upload").click(function () {
+        var mapData = {
+            'difficulty': $("#upload-difficulty").val(),
+            'title': $("#upload-title").val()
+        };
+
+        $.ajax({
+            url: 'upload.php',
+            type: 'POST',
+            dataType: 'text',
+            data: mapData,
+
+            success: function (data) {
+                if (isNaN(data)) alert(data);
+
+                // register
+                else if (data == 1)
+                    alert("Uploaded!");
+            },
+
+            error: function (data) {
+                alert("Error!");
+            }
+        });
+    });
 });

@@ -103,3 +103,12 @@ canvas {
     margin: 1px;
     border: 2px solid #c40114;
 }
+
+.save {
+    background-color: #08a203;
+    border-width: 0;
+    border-radius: 5px;
+    float: right;
+    padding: 3px 6px 3px 6px;
+    margin: -3px;
+}
