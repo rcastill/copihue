@@ -488,6 +488,7 @@ $(document).ready(function () {
 
     $("#upload").click(function () {
         var mapData = {
+            'data': JSON.stringify(data),
             'difficulty': $("#upload-difficulty").val(),
             'title': $("#upload-title").val()
         };
