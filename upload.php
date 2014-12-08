@@ -10,7 +10,7 @@ else if (!isset($_POST["data"]))
 
 else {
     session_start();
-    if (!isset($_SESSIION["user_id"])) {
+    if (!isset($_SESSION["user_id"])) {
         echo "Not connected!";
         die("Not connected while editing");
     }
