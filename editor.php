@@ -2,7 +2,6 @@
 session_start();
 if (!isset($_SESSION["user_id"]))
     header("location:index.html");
-
 ?>
 
 <!DOCTYPE html>
@@ -32,5 +31,11 @@ if (!isset($_SESSION["user_id"]))
         </ul>
     </div>
 </div>
+
+<form id="form-level-data">
+    <input type="text" id="upload-difficulty" placeholder="level title" required>
+    <input type="number" id="upload-title" placeholder="difficulty" required>
+    <input type="submit" value="Upload!">
+</form>
 </body>
 </html>

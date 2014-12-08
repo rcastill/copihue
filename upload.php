@@ -32,7 +32,7 @@ else {
     $query = "INSERT INTO level (data, difficulty, author, title) VALUES ('$data', '$diff', '$author', '$title')";
 
     if ($conn->query($query))
-        return 1;
+        echo 1;
     else
         echo "Failed to register upload";
 
