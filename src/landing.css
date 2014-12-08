@@ -114,13 +114,15 @@ a {
 }
 
 #levels-showcase {
+    white-space: nowrap;
     display: none;
     position: absolute;
     width: 100%;
     overflow-x: scroll;
     overflow-y: hidden;
-    top: 160px;
+    top: 180px;
     box-shadow: 0 0 20px #000;
+    height: 360px;
 }
 
 #levels-showcase::-webkit-scrollbar {
@@ -141,9 +143,9 @@ a {
 }
 
 #levels-showcase .back-cover {
-    position: absolute;
+    position: fixed;
     width: 100%;
-    height: 100%;
+    height: 265px;
     background-color: #000;
     opacity: 0.75;
 }
@@ -167,4 +169,13 @@ a {
 
 #levels-showcase div:nth-child(2) {
     padding-left: 40px;
+}
+
+.level-title {
+    position: relative;
+    margin-left: -400px;
+    color: #FFF;
+    top: -20px;
+    text-shadow: 0 0 5px #000;
+    font-weight: bold;
 }

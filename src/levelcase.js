@@ -1,5 +1,5 @@
 (function($) {
-    $.fn.loadLevel = function(images) {
+    $.fn.loadLevel = function(images, callback) {
         var height  = parseInt(this.attr("data-height"));
         var width   = parseInt(this.attr("data-width"));
         var id      = parseInt(this.attr('data-level'));
@@ -11,18 +11,17 @@
             type: 'GET',
             success: function(data) {
                 me.data("level", data);
-                $.drawOnCanvas(me, images, data.data, width, height);
+                $.drawOnCanvas(me, images, data.data, width, height, callback);
             },
 
             error: function() {
                 console.log("Sorry!, ajax error :(");
             }
         });
-
         return this;
     };
 
-    $.drawOnCanvas = function(target, images, level, width, height) {
+    $.drawOnCanvas = function(target, images, level, width, height, callback) {
         var levelHeight = parseInt(level.dim.y) + 2;
         var levelWidth  = parseInt(level.dim.x) + 2;
         var map         = level.map;
@@ -34,6 +33,9 @@
         canvas.width  = width;
 
         var tileSize = parseInt((width - 20) / levelWidth);
+        if(parseInt((height - 20) / levelHeight) < tileSize)
+            tileSize = parseInt((height - 20) / levelHeight);
+
         var offsetLeft = (width - levelWidth * tileSize) / 2;
         var offsetTop = (height - levelHeight * tileSize) / 2;
 
@@ -90,6 +92,8 @@
 
         target.append(canvas);
 
+        if(callback != undefined)
+            callback(target);
         matrix = undefined;
     };
 
